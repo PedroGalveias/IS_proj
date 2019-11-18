@@ -33,16 +33,16 @@ temperature and humidity monitoring system that beeps when temperature or humidi
 apart from beeping it also logs temperature and humidity into a local binary file. When the local system logs data to the
 binary file (data.bin) it also presents on console the following information:
 
-   SENSOR ID: 1
-  TEMPERATURE: 22.42
-  HUMIDITY: 47.76
-  BATTERY: 99
-  TIMESTAMP: 1571568195 (2019-10-20 11:43:15)
-  SENSOR ID: 2
-  TEMPERATURE: 22.83
-  HUMIDITY: 47.74
-  BATTERY: 98
-  TIMESTAMP: 1571568195 (2019-10-20 11:43:15)
+  * SENSOR ID: 1
+  * TEMPERATURE: 22.42
+  * HUMIDITY: 47.76
+  * BATTERY: 99
+  * TIMESTAMP: 1571568195 (2019-10-20 11:43:15)
+  * SENSOR ID: 2
+  * TEMPERATURE: 22.83
+  * HUMIDITY: 47.74
+  * BATTERY: 98
+  * TIMESTAMP: 1571568195 (2019-10-20 11:43:15)
  
 As the file structure is not known, you must rely on this printed information in order to guess and implement an
 application in order to also forward this information to the WiFi network. Considering the printed information, it is also
@@ -71,8 +71,25 @@ Your work is to implement the solution and write the project report. Remember th
 overall solution must be included in the project report and well explained. It is mandatory! As another tip, we advise
 you to first draw the system architecture and only after that start implement it.
 
+
+## Built With
+
+* [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/) - IDE for C#
+
+## Versioning
+
+We use [Sourcetree](https://www.sourcetreeapp.com/) for versioning.
+
+
 ## Browsers support
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari-ios/safari-ios_48x48.png" alt="iOS Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>iOS Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/samsung-internet/samsung-internet_48x48.png" alt="Samsung" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Samsung | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Opera | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/vivaldi/vivaldi_48x48.png" alt="Vivaldi" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Vivaldi |
 | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
 | IE11, Edge| last 2 versions| last 2 versions| last 2 versions| last 2 versions| last 2 versions| last 2 versions| last 2 versions
+
+
+## Authors
+
+* **Thainá Braz - 2161902**
+* **Pedro Moleiro - 2171264**
+* **Pedro Galveias - 2161966**
