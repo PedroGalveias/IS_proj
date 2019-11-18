@@ -1,9 +1,5 @@
 # Systems Integration Project 2019/2020
 
-## Description 
-
-Implementing Smart Information and Communication Technology (ICT) for well-being, energy efficiency and surveillance in public buildings 
-
 
 ## What is the project about?
 Internet of Things will have a big impact in our society in terms of security, surveillance, well-being and even on climate
