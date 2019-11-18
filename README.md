@@ -34,6 +34,7 @@ binary file (data.bin) it also presents on console the following information:
   * HUMIDITY: 47.76
   * BATTERY: 99
   * TIMESTAMP: 1571568195 (2019-10-20 11:43:15)
+  
   * SENSOR ID: 2
   * TEMPERATURE: 22.83
   * HUMIDITY: 47.74
@@ -89,3 +90,5 @@ We use [Sourcetree](https://www.sourcetreeapp.com/) for versioning.
 * **Thainá Braz - 2161902**
 * **Pedro Moleiro - 2171264**
 * **Pedro Galveias - 2161966**
+* **Kevin Merizalde - 2170786**
+* **Andy Agreda - 2170738**
