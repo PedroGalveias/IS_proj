@@ -1,6 +1,8 @@
 # Systems Integration Project 2019/2020
 
-## Implementing Smart Information and Communication Technology (ICT) for well-being, energy efficiency and surveillance in public buildings 
+## Description 
+
+Implementing Smart Information and Communication Technology (ICT) for well-being, energy efficiency and surveillance in public buildings 
 
 
 ## What is the project about?
