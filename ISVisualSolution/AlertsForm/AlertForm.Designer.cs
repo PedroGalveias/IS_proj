@@ -133,6 +133,7 @@
             this.buttonLimpar.TabIndex = 0;
             this.buttonLimpar.Text = "Limpar Dados";
             this.buttonLimpar.UseVisualStyleBackColor = true;
+            this.buttonLimpar.Click += new System.EventHandler(this.ButtonLimpar_Click);
             // 
             // label1
             // 
@@ -207,6 +208,7 @@
             this.button1.TabIndex = 9;
             this.button1.Text = "Adicionar";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // AlertForm
             // 
