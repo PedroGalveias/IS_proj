@@ -5,10 +5,7 @@ using System.Web;
 
 namespace API.Models
 {
-    public class Sensor
+    public class SensorTemperatura
     {
-        public int Id { get; set; }
-        public int Battery { get; set; }
-       
     }
 }
