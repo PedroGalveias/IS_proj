@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
 
 namespace BaseDados
 {
 
     class Program
     {
-        public static string conn = Properties.Settings.Default.ConnectionString;
+        public static string connectionString = Properties.Settings.Default.ConnectionString;
         public static string[] topics = { "news" };
         static void Main(string[] args)
         {
@@ -46,7 +47,36 @@ namespace BaseDados
             Console.WriteLine($"Topico:{e.Topic}|Msg:{msg}");
             dynamic response=JsonConvert.DeserializeObject(msg);
             Console.WriteLine("json: " + response);
-            
+         
+               using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                //int id = Int32.Parse(response.id);
+                    int id = (int)response.id;
+                    int battery = (int)response.batt;
+                    long time = (long)response.time;
+                    SqlCommand sqlCommand = new SqlCommand("INSERT INTO SENSORES (Id,Battery,Timestemp)VALUES(@id,@battery,@timestemp)", conn);
+                    sqlCommand.Parameters.AddWithValue("@id", id);
+                    sqlCommand.Parameters.AddWithValue("@battery", battery);
+                    sqlCommand.Parameters.AddWithValue("@timestemp", time);
+
+
+                    int result = sqlCommand.ExecuteNonQuery();
+                    if (result > 0)
+                    {
+                        conn.Close();
+                        Console.WriteLine("------------------Dados inseridos nas tabelas-------------");
+                        return;
+                    }
+                    else
+                    {
+                        conn.Close();
+                        Console.WriteLine("ERRO dados nao inseridos em tabelas");
+                        return;
+                    }
+                };
+       
+
         }
     }
 }
