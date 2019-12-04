@@ -9,6 +9,7 @@ namespace API.Models
     {
         public int Id { get; set; }
         public int Battery { get; set; }
-       
+        public long Timestamp { get; set; }
+
     }
 }
