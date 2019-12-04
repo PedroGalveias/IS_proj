@@ -22,7 +22,38 @@ namespace BaseDados
             ip.Trim();
             ip = "127.0.0.1";
             Console.WriteLine("Seu ip é: " + ip);
+            Console.WriteLine(connectionString);
             MqttClient mClient = new MqttClient(ip);
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                //int id = Int32.Parse(response.id);
+                int id = 5;
+                int battery = 14;
+                long time = 1232132131;
+                SqlCommand sqlCommand = new SqlCommand("INSERT INTO Sensores VALUES(@id,@battery,@timestemp)", conn);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                sqlCommand.Parameters.AddWithValue("@battery", battery);
+                sqlCommand.Parameters.AddWithValue("@timestemp", time);
+
+
+                int result = sqlCommand.ExecuteNonQuery();
+                if (result > 0)
+                {
+                    conn.Close();
+                    Console.WriteLine("------------------Dados inseridos nas tabelas PRUEBA-------------");
+                    Console.ReadKey();
+                    return;
+                }
+                else
+                {
+                    conn.Close();
+                    Console.WriteLine("ERRO dados nao inseridos em tabelas");
+                    return;
+                }
+            };
+           
+        }/*
             mClient.Connect(Guid.NewGuid().ToString());
             if (!mClient.IsConnected)
             {
@@ -77,6 +108,6 @@ namespace BaseDados
                 };
        
 
-        }
+        }*/
     }
 }
