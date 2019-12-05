@@ -49,6 +49,7 @@ namespace BaseDados
             dynamic response=JsonConvert.DeserializeObject(msg);
             Console.WriteLine("json: " + response);
 
+            //DADOS DO SENSORES
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 //int id = Int32.Parse(response.id);
@@ -113,17 +114,20 @@ namespace BaseDados
                     if (time > timeMax)
                     {
                         //ATUALIZAR TIMESTAMP da tabela
+                        #region ATUALIZAR TIMESTAMP da tabela Sensores
                         SqlCommand sqlCommand = new SqlCommand("UPDATE Sensores set Timestamp = @time WHERE id=@id", connection);
                         sqlCommand.Parameters.AddWithValue("@time", time);
                         sqlCommand.Parameters.AddWithValue("@id", id);
                         int result = sqlCommand.ExecuteNonQuery();
                         if (result > 0)
-                        {   
+                        {
                             Console.WriteLine($"------------ATUALIZADO COLUNA TIMESTAMP DO SENSOR ID:{id} TIMESTAMP:{time}----------------------");
                             return;
                         }
+                        #endregion
 
-                    }else
+                    }
+                    else
                     {
                         Console.WriteLine($"------------LEITURA JA EXISTE ----------------------");
                         return;
