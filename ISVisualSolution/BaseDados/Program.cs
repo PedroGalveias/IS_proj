@@ -56,7 +56,8 @@ namespace BaseDados
                 int id = (int)response.id;
                 int battery = (int)response.batt;
                 long time = (long)response.time;
-
+                float temp = (float)response.temp;
+                float hum = (float)response.hum;
 
 
                 //TRAER LOS SENSORES EXISTENTES Y DATOS
@@ -87,8 +88,27 @@ namespace BaseDados
                     int result = sqlCommand.ExecuteNonQuery();
                     if (result > 0)
                     {
-                        connection.Close();
                         Console.WriteLine($"------------------SENSOR NOVO INSERIDO com Id:{id}-------------");
+                        #region INSERT DADOS TABELAS POR ENTANTO HUM e TEMP
+                        Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
+                        sqlCommand = new SqlCommand("INSERT INTO TEMPERATURE (Sensor_Id,Timestamp,Temp)VALUES(@id,@timestamp,@temp)", connection);
+                        sqlCommand.Parameters.AddWithValue("@id", id);
+                        sqlCommand.Parameters.AddWithValue("@timestamp", time);
+                        sqlCommand.Parameters.AddWithValue("@temp", temp);
+                        result = sqlCommand.ExecuteNonQuery();
+                        if (result <= 0)
+                        {
+                            connection.Close();
+                            return;
+                        }
+                        Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
+                        sqlCommand = new SqlCommand("INSERT INTO HUMIDITY (Sensor_Id,Timestamp,Hum)VALUES(@id,@timestamp,@hum)", connection);
+                        sqlCommand.Parameters.AddWithValue("@id", id);
+                        sqlCommand.Parameters.AddWithValue("@timestamp", time);
+                        sqlCommand.Parameters.AddWithValue("@hum", hum);
+                        result = sqlCommand.ExecuteNonQuery();
+                        connection.Close();
+                        #endregion
                         return;
                     }
                     else
@@ -122,6 +142,26 @@ namespace BaseDados
                         if (result > 0)
                         {
                             Console.WriteLine($"------------ATUALIZADO COLUNA TIMESTAMP DO SENSOR ID:{id} TIMESTAMP:{time}----------------------");
+                            #region INSERT DADOS TABELAS POR ENTANTO HUM e TEMP
+                            Console.WriteLine($"------------INSERIDA LEITURA NA TABELA TEMPERATURE COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
+                            sqlCommand = new SqlCommand("INSERT INTO TEMPERATURE (Sensor_Id,Timestamp,Temp)VALUES(@id,@timestamp,@temp)", connection);
+                            sqlCommand.Parameters.AddWithValue("@id", id);
+                            sqlCommand.Parameters.AddWithValue("@timestamp", time);
+                            sqlCommand.Parameters.AddWithValue("@temp", temp);
+                            result = sqlCommand.ExecuteNonQuery();
+                            if (result <= 0)
+                            {
+                                connection.Close();
+                                return;
+                            }
+                            Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
+                            sqlCommand = new SqlCommand("INSERT INTO HUMIDITY (Sensor_Id,Timestamp,Hum)VALUES(@id,@timestamp,@hum)", connection);
+                            sqlCommand.Parameters.AddWithValue("@id", id);
+                            sqlCommand.Parameters.AddWithValue("@timestamp", time);
+                            sqlCommand.Parameters.AddWithValue("@hum", hum);
+                            result = sqlCommand.ExecuteNonQuery();
+                            connection.Close();
+                            #endregion
                             return;
                         }
                         #endregion
