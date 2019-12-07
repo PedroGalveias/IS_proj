@@ -34,11 +34,16 @@ def execute_brige(filename):
 					'temp': temp,
 					'hum': hum,
 					'batt': batt,
-					'time': times
+					'time': times,
+					'sensors': [
+						'temp',
+						'hum'
+						]
 				}
 				
 				json_data = json.dumps(data);
 
+				print("JSON: " + str(json_data))
 				client.publish("bridge", str(json_data))
 				
 				print("--------------------------" + os.linesep)
@@ -48,7 +53,7 @@ def execute_brige(filename):
 		f.close();
 
 def main():
-	execute_brige("data.bin")
+	execute_brige("data_1.bin")
 
 if __name__ == "__main__":
 	main()
