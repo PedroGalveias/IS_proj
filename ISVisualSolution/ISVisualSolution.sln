@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.87
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{6768E67F-0F6A-4699-8421-A51F581CE86F}"
 EndProject
@@ -19,6 +19,10 @@ Global
 		{6768E67F-0F6A-4699-8421-A51F581CE86F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6768E67F-0F6A-4699-8421-A51F581CE86F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6768E67F-0F6A-4699-8421-A51F581CE86F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDCECBA4-199B-4E43-8FC1-C921764E0E39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCECBA4-199B-4E43-8FC1-C921764E0E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCECBA4-199B-4E43-8FC1-C921764E0E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCECBA4-199B-4E43-8FC1-C921764E0E39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

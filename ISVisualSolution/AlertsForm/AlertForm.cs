@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
+using Newtonsoft.Json;
 
 
 namespace AlertsForm
@@ -71,11 +72,12 @@ namespace AlertsForm
             }
             else
             {
-                string msg = novaAlerta.ToString();
+                string msg = JsonConvert.SerializeObject(novaAlerta);
                 
                 MessageBox.Show("Connection to broke ok...");
                 //envio da alerta 
                 client.Publish(TOPIC, Encoding.UTF8.GetBytes(msg));
+                MessageBox.Show("Sending Alert to topic: "+TOPIC);
             }
 
         }
