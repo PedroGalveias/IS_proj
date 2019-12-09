@@ -7,6 +7,7 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using Newtonsoft.Json.Linq;
 
 namespace BaseDados
 {
@@ -46,19 +47,20 @@ namespace BaseDados
         {
             string msg = Encoding.UTF8.GetString(e.Message);
             Console.WriteLine($"Topico:{e.Topic}|Msg:{msg}");
-            dynamic response=JsonConvert.DeserializeObject(msg);
+            JObject response=JObject.Parse(msg);
+           
             Console.WriteLine("json: " + response);
 
             //DADOS DO SENSORES
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 //int id = Int32.Parse(response.id);
-                int id = (int)response.id;
-                int battery = (int)response.batt;
-                long time = (long)response.time;
-                float temp = (float)response.temp;
-                float hum = (float)response.hum;
-
+                int id = (int)response["id"];
+                int battery = (int)response["batt"];
+                long time = (long)response["time"];
+                string[] arrayTypes = response["sensors"].ToObject<string[]>();
+              // Console.WriteLine(response[arr]);
+                
 
                 //TRAER LOS SENSORES EXISTENTES Y DATOS
                 #region SELECT SENSORES 
@@ -71,12 +73,24 @@ namespace BaseDados
                     listaIdSensores.Add((int)reader["Id"]);
                 }
                 reader.Close();
+                //TRAER DADOS DOS TYPES
+                cmd = new SqlCommand("SELECT UPPER(Type) as Result from Sensor_Type",connection);
+                reader = cmd.ExecuteReader();
+                List<string> listaTypes = new List<string>();
+                while (reader.Read())
+                {
+                    listaTypes.Add((string)reader["Result"]);
+                }
+                reader.Close();
                 connection.Close();
                 Console.WriteLine($"->Sensores na BD:{listaIdSensores.Count} ");
+                Console.WriteLine($"Tabelas: {listaTypes.Count}");
                 #endregion
                 //PERSISTIR UM NOVO SENSOR
                 if (!listaIdSensores.Contains(id))
                 {
+                    Console.WriteLine("ENTRO");
+
                     connection.Open();
                     #region INSERT NOVOS SENSORES
                     SqlCommand sqlCommand = new SqlCommand("INSERT INTO SENSORES (Id,Battery,Timestamp)VALUES(@id,@battery,@timestamp)", connection);
@@ -89,27 +103,33 @@ namespace BaseDados
                     if (result > 0)
                     {
                         Console.WriteLine($"------------------SENSOR NOVO INSERIDO com Id:{id}-------------");
-                        #region INSERT DADOS TABELAS POR ENTANTO HUM e TEMP
-                        Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
-                        sqlCommand = new SqlCommand("INSERT INTO TEMPERATURE (Sensor_Id,Timestamp,Temp)VALUES(@id,@timestamp,@temp)", connection);
-                        sqlCommand.Parameters.AddWithValue("@id", id);
-                        sqlCommand.Parameters.AddWithValue("@timestamp", time);
-                        sqlCommand.Parameters.AddWithValue("@temp", temp);
-                        result = sqlCommand.ExecuteNonQuery();
-                        if (result <= 0)
+                        #region CREAR TABELAS DE SER NECEARIO
+                        foreach (string item in arrayTypes)
                         {
-                            connection.Close();
-                            return;
+                            if (!listaTypes.Contains(item.ToUpper()))
+                            {
+                                string comdStr = $"CREATE TABLE {item} ([Timestamp] BIGINT  NOT NULL PRIMARY KEY, [Sensor_Id] INT NOT NULL,[{item}] FLOAT NOT NULL)";
+                                sqlCommand = new SqlCommand(comdStr, connection);
+                               // sqlCommand.Parameters.AddWithValue("@name", item
+                                result = sqlCommand.ExecuteNonQuery();
+                                sqlCommand = new SqlCommand("INSERT INTO Sensor_Type (Type) VALUES (@type)", connection);
+                                sqlCommand.Parameters.AddWithValue("@type", item);
+                                sqlCommand.ExecuteNonQuery();
+                            }
+                            float dado =(float) response[item];
+                            Console.WriteLine($"------------INSERIDA LEITURA NA TABELA {item.ToUpper()} COM SENSOR_ID:{id} TIMESTAMP:{time} {result}:{dado}----------------------");
+                            sqlCommand = new SqlCommand($"INSERT INTO {item} (Sensor_Id,Timestamp,{item})VALUES(@id,@timestamp,@dado)", connection);
+                            sqlCommand.Parameters.AddWithValue("@id", id);
+                            sqlCommand.Parameters.AddWithValue("@timestamp", time);
+                           // sqlCommand.Parameters.AddWithValue("@name", item);
+                            sqlCommand.Parameters.AddWithValue("@dado", dado);
+                            result = sqlCommand.ExecuteNonQuery();
+                          
+
                         }
-                        Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
-                        sqlCommand = new SqlCommand("INSERT INTO HUMIDITY (Sensor_Id,Timestamp,Hum)VALUES(@id,@timestamp,@hum)", connection);
-                        sqlCommand.Parameters.AddWithValue("@id", id);
-                        sqlCommand.Parameters.AddWithValue("@timestamp", time);
-                        sqlCommand.Parameters.AddWithValue("@hum", hum);
-                        result = sqlCommand.ExecuteNonQuery();
                         connection.Close();
-                        #endregion
                         return;
+                        #endregion
                     }
                     else
                     {
@@ -120,6 +140,7 @@ namespace BaseDados
 
                     #endregion
                 }
+                /*
                 else
                 {
                     //TRAER ULTIMA LEITURA DO SENSOR
@@ -142,6 +163,10 @@ namespace BaseDados
                         if (result > 0)
                         {
                             Console.WriteLine($"------------ATUALIZADO COLUNA TIMESTAMP DO SENSOR ID:{id} TIMESTAMP:{time}----------------------");
+                            List<string> tabelas=new List<string>();
+                            tabelas.Add("Temperatura");
+                           
+                            
                             #region INSERT DADOS TABELAS POR ENTANTO HUM e TEMP
                             Console.WriteLine($"------------INSERIDA LEITURA NA TABELA TEMPERATURE COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
                             sqlCommand = new SqlCommand("INSERT INTO TEMPERATURE (Sensor_Id,Timestamp,Temp)VALUES(@id,@timestamp,@temp)", connection);
@@ -154,7 +179,7 @@ namespace BaseDados
                                 connection.Close();
                                 return;
                             }
-                            Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} TEMP:{temp}----------------------");
+                            Console.WriteLine($"------------INSERIDA LEITURA NA TABELA HUMIDITY COM SENSOR_ID:{id} TIMESTAMP:{time} HUM:{hum}----------------------");
                             sqlCommand = new SqlCommand("INSERT INTO HUMIDITY (Sensor_Id,Timestamp,Hum)VALUES(@id,@timestamp,@hum)", connection);
                             sqlCommand.Parameters.AddWithValue("@id", id);
                             sqlCommand.Parameters.AddWithValue("@timestamp", time);
@@ -163,6 +188,7 @@ namespace BaseDados
                             connection.Close();
                             #endregion
                             return;
+
                         }
                         #endregion
 
@@ -172,7 +198,8 @@ namespace BaseDados
                         Console.WriteLine($"------------LEITURA JA EXISTE ----------------------");
                         return;
                     }
-                }
+                }*/
+                
             };
         }
     }
