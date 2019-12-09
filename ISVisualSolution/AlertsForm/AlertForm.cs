@@ -11,12 +11,14 @@ using System.Windows.Forms;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
 
 
 namespace AlertsForm
 {
     public partial class AlertForm : Form
     {
+        
         MqttClient client = null;
         const string TOPIC = "alertas";
         //enum Operacoes{MAIOR,MENOR,IGUAL,ENTRE};
@@ -25,7 +27,10 @@ namespace AlertsForm
         enum Tipos { HUMIDADE,TEMPERATURA,LUMINOSIDADE}
         //Dominio do broker
         const string BROKENDOMAIN = "127.0.0.1";
-
+       
+        //Connection string 
+        static string connectionString = Properties.Settings.Default.ConnectionString;
+        
         public AlertForm()
         {
             InitializeComponent();
@@ -92,17 +97,122 @@ namespace AlertsForm
             numericUpDownValor2.Visible = false;
         }
 
+        private void atualizarAlertas()
+        {
+            List<Alerta> listaAlertasAtivas = new List<Alerta>();
+            List<Alerta> listaAlertasDesativas = new List<Alerta>();
+            SqlConnection conn = null;
+            try
+            {
+                conn = new SqlConnection(connectionString);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts", conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Alerta alerta = new Alerta
+                    {
+                        Id = (int)reader["Id"],
+                        Tipo = (string)reader["Tipo"],
+                        Operacao = (string)reader["Operacao"],
+                        Valor1 = (reader["Valor1"] == DBNull.Value) ? 0 : Convert.ToDouble(reader["Valor1"]),
+                        Valor2 = (reader["Valor2"] == DBNull.Value) ? 0 : Convert.ToDouble(reader["Valor2"]),
+                        Ativo = (bool)reader["Ativo"]
+                    };
+                    if (alerta.Ativo)
+                    {
+                    listaAlertasAtivas.Add(alerta);
+                    }
+                    else
+                    {
+                        listaAlertasDesativas.Add(alerta);
+                    }
+
+                    listBoxCondicoesAtivas.DataSource = listaAlertasAtivas;
+                    listBoxCondicoesDesativas.DataSource = listaAlertasDesativas;
+                }
+                reader.Close();
+                conn.Close();
+                return;
+            }
+            catch (Exception)
+            {
+                if (conn.State == System.Data.ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+
+                return;
+            }
+        }
+
+        private void buttonDesativar_Click(object sender, EventArgs e)
+        {
+            if (listBoxCondicoesAtivas.SelectedValue == null)
+            {
+                MessageBox.Show("Error Nenhum elemento selecionado ...");
+                return;
+            }
+
+            mudarEstado();
+           
+        }
+
+        private void mudarEstado()
+        {
+            try
+            {
+                Alerta alerta = (Alerta)listBoxCondicoesAtivas.SelectedValue;
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE Alerts SET Ativo=@ativo WHERE Id=@idAlert", conn);
+                    cmd.Parameters.AddWithValue("@ativo", !alerta.Ativo);
+                    cmd.Parameters.AddWithValue("@idAlert", alerta.Id);
+
+                    int result = cmd.ExecuteNonQuery();//devuelve cuantos registros fueron afectados
+                    conn.Close();
+                    if (result > 0)
+                    {
+                        MessageBox.Show("OK ...");
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error Alert Not found ...");
+                        return;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Error ...");
+                return;
+            }
+        }
+
+        private void buttonAtivar_Click(object sender, EventArgs e)
+        {
+            if (listBoxCondicoesAtivas.SelectedValue == null)
+            {
+                MessageBox.Show("Error Nenhum elemento selecionado ...");
+                return;
+            }
+
+            mudarEstado();
+        }
 
         /*
-                private Boolean ValidateAlertInfo()
-                {
-                    bool valido = true;
-                    double valor1 = (double) numericUpDownValor1.Value;
-                    if (comboBoxOperacao.SelectedItem == "Entre")
-                    {
-                    double valor2 = (double) numericUpDownValor2.Value;
-                    }            
-                    return true;
-                }*/
+       private Boolean ValidateAlertInfo()
+       {
+           bool valido = true;
+           double valor1 = (double) numericUpDownValor1.Value;
+           if (comboBoxOperacao.SelectedItem == "Entre")
+           {
+           double valor2 = (double) numericUpDownValor2.Value;
+           }            
+           return true;
+       }*/
     }
 }
