@@ -20,7 +20,8 @@ namespace AlertsForm
     {
         
         MqttClient client = null;
-        const string TOPIC = "alertas";
+        const string TOPIC = "alerts";      
+        string[] topicsSubscriber = { "bridge"};
         //enum Operacoes{MAIOR,MENOR,IGUAL,ENTRE};
         string[] operacoes= { ">", "<", "=","Entre" };
         //**** TIPOS DEBERIAN SER TRAIDOS DE LA BD
@@ -38,8 +39,44 @@ namespace AlertsForm
             comboBoxOperacao.DataSource = operacoes;
             numericUpDownValor2.Visible = false;
             comboBoxType.DataSource = Enum.GetNames(typeof(Tipos));
-        }
 
+            #region Compare Alerts with msg
+            client = new MqttClient(BROKENDOMAIN);
+
+            client.Connect(Guid.NewGuid().ToString());
+            if (!client.IsConnected)
+            {
+                MessageBox.Show("Error connecting to message broker ...");
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Connection to broke ok...");
+                
+            }
+
+
+            byte[] qosLevels = {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE};
+
+            client.Subscribe(topicsSubscriber, qosLevels);
+
+            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+            #endregion
+        }
+        private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
+        {
+            //*** so para testar (eliminar)
+           string msg = Encoding.UTF8.GetString(e.Message);
+
+            this.Invoke((MethodInvoker)delegate () {
+                MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
+            });
+            //***
+            //ex: msg
+            /*{"id": 1, "temp": 22.489999771118164, "hum": 47.290000915527344, "batt": 100, "time": 1575058625, "sensors": ["temp", "hum"]}*/
+            //comparar msg com alerta 
+            
+        }
         private void ButtonLimpar_Click(object sender, EventArgs e)
         {
             numericUpDownValor1.Value = 0;
@@ -66,10 +103,11 @@ namespace AlertsForm
             }
 
             //codigo para publicar alerta no broker 
-
+            //inicializado al crear el form 
+            /*
             client = new MqttClient(BROKENDOMAIN);
 
-            client.Connect(Guid.NewGuid().ToString());
+            client.Connect(Guid.NewGuid().ToString());*/
             if (!client.IsConnected)
             {
                 MessageBox.Show("Error connecting to message broker ...");
@@ -78,7 +116,7 @@ namespace AlertsForm
             else
             {
                 string msg = JsonConvert.SerializeObject(novaAlerta);
-                
+                MessageBox.Show(msg);
                 MessageBox.Show("Connection to broke ok...");
                 //envio da alerta 
                 client.Publish(TOPIC, Encoding.UTF8.GetBytes(msg));
