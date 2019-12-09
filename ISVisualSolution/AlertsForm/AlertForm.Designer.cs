@@ -71,6 +71,7 @@
             this.buttonAtivar.TabIndex = 1;
             this.buttonAtivar.Text = "Ativar Condição";
             this.buttonAtivar.UseVisualStyleBackColor = true;
+            this.buttonAtivar.Click += new System.EventHandler(this.buttonAtivar_Click);
             // 
             // buttonDesativar
             // 
@@ -81,6 +82,7 @@
             this.buttonDesativar.TabIndex = 2;
             this.buttonDesativar.Text = "Desativar Condição";
             this.buttonDesativar.UseVisualStyleBackColor = true;
+            this.buttonDesativar.Click += new System.EventHandler(this.buttonDesativar_Click);
             // 
             // groupBoxAtivas
             // 
