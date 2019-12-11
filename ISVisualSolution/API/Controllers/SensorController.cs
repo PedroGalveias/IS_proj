@@ -1,36 +1,29 @@
 ﻿using API.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http; 
+using System.Web.Http;
 
 namespace API.Controllers
 {
-    public class SensorsController : ApiController
+    public class SensorController : ApiController
     {
-        Dictionary<string, string> sensorType = new Dictionary<string, string>();
-
-        List<Sensor> sensors = new List<Sensor>{
-            new Sensor{Id= 1, SensorType = new Dictionary<string, string>().Add("temp", "22.42"), Battery= 99,Timestamp=157122222
-},
-            }
-
         // GET api/<controller>
         [Route("api/sensors")]
-        
-
         public IEnumerable<Sensor> GetAllSensors()
         {
-            return sensors;
+            throw new NotImplementedException();
         }
 
         // GET api/<controller>/5
         [Route("api/sensors/{id}")]
         public IHttpActionResult GetSensorById(int id)
         {
+            throw new NotImplementedException();
+
+            /*
             SqlConnection conn = null;
             var sensor = sensor.FirstOrDefault((p) => p.Id == id);
 
@@ -44,17 +37,17 @@ namespace API.Controllers
                 }
                 return Ok(sensor);
 
-                /*  SqlCommand cmd = new SqlCommand();
-                var sensor = sensors.FirstOrDefault((p) => p.Id == id);
+                //SqlCommand cmd = new SqlCommand();
+                //var sensor = sensors.FirstOrDefault((p) => p.Id == id);
                 
-                if (sensor == null)
-                {
-                    return NotFound();
-                }
-                 reader.Close();
-                 conn.Close();
-                 return Ok(sensor);
-                 */
+                //if (sensor == null)
+                //{
+                    //return NotFound();
+                //}
+                 //reader.Close();
+                 //conn.Close();
+                 //return Ok(sensor);
+                 
 
                 return NotFound();
 
@@ -64,13 +57,15 @@ namespace API.Controllers
 
                 throw;
             }
-           
+            */
         }
 
         // POST api/<controller>
         [Route("api/sensors")]
         public IHttpActionResult Post([FromBody]string typeSensor, [FromBody]string value)
         {
+            throw new NotImplementedException();
+            /*
             try
             {
                 sensorType.Add(typeSensor, value);
@@ -81,18 +76,21 @@ namespace API.Controllers
 
                 return NotFound();
             }
+            */
         }
 
         // PUT api/<controller>/5
         [Route("api/sensors/{id}")]
         public void Put(int id, [FromBody]string value)
         {
+            throw new NotImplementedException();
         }
 
         // DELETE api/<controller>/5
         [Route("api/sensors/{id}")]
         public void Delete(int id)
         {
+            throw new NotImplementedException();
         }
     }
 }
