@@ -12,7 +12,7 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
-
+using Newtonsoft.Json.Linq;
 
 namespace AlertsForm
 {
@@ -70,13 +70,23 @@ namespace AlertsForm
 
             this.Invoke((MethodInvoker)delegate () {
                 MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
+                //codigo tiene que ser hecho aqui ?
+                Sensor sensor = new Sensor(msg);
+                int i = 1;
             });
+           
             //***
             //ex: msg
             /*{"id": 1, "temp": 22.489999771118164, "hum": 47.290000915527344, "batt": 100, "time": 1575058625, "sensors": ["temp", "hum"]}*/
             //comparar msg com alerta 
             
+
         }
+        private void compararDados(Sensor sensor)
+        {
+
+        }
+
         private void ButtonLimpar_Click(object sender, EventArgs e)
         {
             numericUpDownValor1.Value = 0;
