@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="f3dad687-221c-4dce-8354-166e5c5f5791" ChangeDateTime="12/16/2019 16:02:10">
+    <Property Name="ElementName" Value="[dbo].[SensorTypes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Sensor_Type]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7fbda872-5156-425e-b31e-e8d5038cebad" ChangeDateTime="12/16/2019 16:02:36">
+    <Property Name="ElementName" Value="[dbo].[Sensors]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Sensores]" />
+  </Operation>
+</Operations>

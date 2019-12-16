@@ -12,6 +12,14 @@ namespace API
 	// NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
 	public class ServiceSensor : ISensor
 	{
-		
+		public List<Sensor> GetAllSensors()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Sensor GetSensorById()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

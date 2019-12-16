@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BaseDados.Properties {
+namespace API.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
