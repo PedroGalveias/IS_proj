@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -8,35 +9,76 @@ using System.Text;
 
 namespace API
 {
-<<<<<<< HEAD
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class ServiceSensor : ISensor
     {
+        public static string connectionString = Properties.Settings.Default.ConnectionString;
+
         public List<Sensor> GetAllSensors()
         {
-            throw new NotImplementedException();
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            // Sensor sensor = new Sensor();
+            List<Sensor> sensors = new List<Sensor>();
+
+
+            sqlConnection.Open();
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Sensores", sqlConnection);
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Sensor sensor = new Sensor
+                {
+                    Id = (short)reader["Id"],
+                    Battery = (short)reader["Battery"],
+                    Timestamp = (long)reader["Timestamp"]
+
+                };
+                sensors.Add(sensor);
+            }
+            reader.Close();
+            sqlConnection.Close();
+
+
+            return sensors;
+
         }
 
-        public Sensor GetSensorById()
+        public Sensor GetSensorById(short id)
         {
-            throw new NotImplementedException();
-        }
-    }
-=======
-	// NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
-	// NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
-	public class ServiceSensor : ISensor
-	{
-		public List<Sensor> GetAllSensors()
-		{
-			throw new NotImplementedException();
-		}
 
-		public Sensor GetSensorById()
-		{
-			throw new NotImplementedException();
-		}
-	}
->>>>>>> c39556fa6ad9c6ed7e51ae7e39151a36eadeb943
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            Sensor sensor = null;
+
+
+            sqlConnection.Open();
+
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+            cmd.Parameters.AddWithValue("@id", id);
+          
+            SqlDataReader reader = cmd.ExecuteReader();
+            
+
+            while (reader.Read())
+            {
+                sensor = new Sensor
+                {
+                    Id = (short)reader["Id"],
+                    Battery = (short)reader["Battery"],
+                    Timestamp = (long)reader["Timestamp"]
+
+                };
+               
+            }
+            reader.Close();
+            sqlConnection.Close();
+
+            return sensor;
+            
+
+        }
+
+    }
 }
