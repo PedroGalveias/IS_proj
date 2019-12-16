@@ -21,7 +21,7 @@ namespace BaseDados
             Console.Write("Escreva um ip: ");
             string ip = Console.ReadLine();
             ip.Trim();
-            ip = "127.0.0.1";
+            ip = "127.0.0.1";   
             Console.WriteLine("Seu ip é: " + ip);
             MqttClient mClient = new MqttClient(ip);
 
@@ -215,20 +215,24 @@ namespace BaseDados
                         double valor1 = (double)response["Valor1"];
                         double valor2 = (double)response["Valor2"];
                         bool ativo = (bool)response["Ativo"];
+                        int sensor_id=(int)response["Sensor_Id"];
 
-                        SqlCommand sqlCommand = new SqlCommand("INSERT INTO Alerts (Tipo,Operacao,Valor1,Valor2,Ativo) VALUES(@Tipo,@Operacao,@Valor1,@Valor2,@Ativo)", connection);
+                        SqlCommand sqlCommand = new SqlCommand("INSERT INTO Alerts (Tipo,Operacao,Valor1,Valor2,Ativo,Sensor_Id) VALUES(@Tipo,@Operacao,@Valor1,@Valor2,@Ativo,@sensor_id)", connection);
                         sqlCommand.Parameters.AddWithValue("@Tipo",tipo);
                         sqlCommand.Parameters.AddWithValue("@Operacao", operacao);
                         sqlCommand.Parameters.AddWithValue("@Valor1", valor1);
                         sqlCommand.Parameters.AddWithValue("@Valor2", valor2);
                         sqlCommand.Parameters.AddWithValue("@Ativo", ativo);
+                        sqlCommand.Parameters.AddWithValue("@sensor_id", sensor_id);
+
                         sqlCommand.ExecuteNonQuery();
                         connection.Close();
                     };
                         break;
                 default:
                     break;
-            }
+            }   
+             
         }
     }
 }
