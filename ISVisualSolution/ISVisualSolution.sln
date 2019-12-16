@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
@@ -12,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics", "Statistics\Statistics.csproj", "{CB39F4C2-E222-4882-B880-65D49FBBD247}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{74AFF8E2-54EB-4DE5-B17B-CF2E75EFB605}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DB", "DB\DB.sqlproj", "{72207183-1C33-4951-BB6E-D4395F68ECA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +38,12 @@ Global
 		{74AFF8E2-54EB-4DE5-B17B-CF2E75EFB605}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74AFF8E2-54EB-4DE5-B17B-CF2E75EFB605}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74AFF8E2-54EB-4DE5-B17B-CF2E75EFB605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72207183-1C33-4951-BB6E-D4395F68ECA1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
