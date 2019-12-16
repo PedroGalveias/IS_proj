@@ -13,6 +13,9 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Xml;
+using System.Globalization;
 
 namespace AlertsForm
 {
@@ -31,14 +34,53 @@ namespace AlertsForm
        
         //Connection string 
         static string connectionString = Properties.Settings.Default.ConnectionString;
-        
+
+        //List of alerts
+        List<Alerta> alertasAtivas;
+        List<Alerta> alertasDesativas;
+
+        //File alerts
+        const string FILE_ALERT = "alerts.xml";
+
+        //contador para ID
+        int contador;
         public AlertForm()
         {
+            #region UpdateContador
+            //contador para ID
+            contador = 1;
+            // expressao xpath = alerts/alert[not(../alert/id > id)]/id maior ID
+            if (File.Exists(FILE_ALERT))
+            {
+                XmlDocument doc = new XmlDocument();
+
+                try
+                {
+                    doc.Load(FILE_ALERT);
+
+                    XmlNodeList xmlNodeList = doc.SelectNodes("alerts/alert[not(../alert/id > id)]/id");
+
+                    //MessageBox.Show(xmlNodeList[0].OuterXml);
+
+                    contador = Convert.ToInt16(xmlNodeList[0].OuterXml);
+                }catch(Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+            }
+        
+
+            #endregion
             InitializeComponent();
             //comboBoxOperacao.DataSource = Enum.GetNames(typeof(Operacoes));
             comboBoxOperacao.DataSource = operacoes;
             numericUpDownValor2.Visible = false;
             comboBoxType.DataSource = Enum.GetNames(typeof(Tipos));
+
+            #region atualizarListas
+
+            #endregion
 
             #region Compare Alerts with msg
             client = new MqttClient(BROKENDOMAIN);
@@ -63,6 +105,32 @@ namespace AlertsForm
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             #endregion
         }
+        private List<Alerta> GetListOfAlertasAtivas()
+        {
+            List<Alerta> alertasAtivas = new List<Alerta>();
+            if (File.Exists(FILE_ALERT))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(FILE_ALERT);
+
+                XmlNodeList alertsA = doc.SelectNodes("/alerts/alert[@ativo ='true']");
+                foreach (XmlNode item in alertsA)
+                {
+                    //criar instancia de book y adicionar a lista
+                    Alerta a = new Alerta
+                    {
+                        Id = Convert.ToInt16(item["id"].InnerText),
+                        Tipo = item["tipo"].InnerText,
+                        Operacao = item["operacao"].InnerText,
+                        Valor1 = double.Parse(item["valor1"].InnerText, NumberFormatInfo.InvariantInfo),
+                        Valor2 = double.Parse(item["valor2"].InnerText, NumberFormatInfo.InvariantInfo),
+                        Ativo = true
+                    };
+                    alertasAtivas.Add(a);
+                }
+            }
+            return alertasAtivas;
+        }
         private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             //*** so para testar (eliminar)
@@ -71,8 +139,7 @@ namespace AlertsForm
             this.Invoke((MethodInvoker)delegate () {
                 MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
                 //codigo tiene que ser hecho aqui ?
-                Sensor sensor = new Sensor(msg);
-                int i = 1;
+                Sensor sensor = new Sensor(msg);                
             });
            
             //***
@@ -98,41 +165,72 @@ namespace AlertsForm
 
         private void buttonAdicionar_Click(object sender, EventArgs e)
         {
-            double valor1 = (double)numericUpDownValor1.Value;
-            double valor2 = (double)numericUpDownValor2.Value;
-            String operacao = comboBoxOperacao.SelectedItem.ToString();
-            String tipo = comboBoxType.SelectedItem.ToString();
+            double valor1Alerta = (double)numericUpDownValor1.Value;
+            double valor2Alerta = (double)numericUpDownValor2.Value;
+            String operacaoAlerta = comboBoxOperacao.SelectedItem.ToString();
+            String tipoSensor = comboBoxType.SelectedItem.ToString();
             Alerta novaAlerta;
-            if (operacao == "Entre")
+            if (operacaoAlerta == "Entre")
             {
-                 novaAlerta= new Alerta(tipo, operacao, valor1, valor2);
+            novaAlerta= new Alerta(contador,tipoSensor, operacaoAlerta, valor1Alerta, valor2Alerta, true);             
             }
             else
             {
-            novaAlerta = new Alerta(tipo, operacao, valor1);
+            novaAlerta = new Alerta(contador,tipoSensor, operacaoAlerta, valor1Alerta);
             }
+            contador++;
 
-            //codigo para publicar alerta no broker 
-            //inicializado al crear el form 
-            /*
-            client = new MqttClient(BROKENDOMAIN);
+            #region adicionar alert num ficheiro XML
+            /*string json = JsonConvert.SerializeObject(novaAlerta);
 
-            client.Connect(Guid.NewGuid().ToString());*/
-            if (!client.IsConnected)
+            StreamWriter streamWriter = File.AppendText(FILE_ALERT);
+            streamWriter.WriteLine(json);
+            streamWriter.Close();*/
+
+            XmlDocument doc = new XmlDocument();
+            if (!File.Exists(FILE_ALERT))
             {
-                MessageBox.Show("Error connecting to message broker ...");
-                return;
-            }
-            else
-            {
-                string msg = JsonConvert.SerializeObject(novaAlerta);
-                MessageBox.Show(msg);
-                MessageBox.Show("Connection to broke ok...");
-                //envio da alerta 
-                client.Publish(TOPIC, Encoding.UTF8.GetBytes(msg));
-                MessageBox.Show("Sending Alert to topic: "+TOPIC);
-            }
+                XmlNode docNode = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+                doc.AppendChild(docNode);
 
+                XmlNode alertsNode = doc.CreateElement("alerts");
+                doc.AppendChild(alertsNode);
+
+
+                doc.Save(FILE_ALERT);
+            }
+            doc.Load(FILE_ALERT);
+
+            XmlNode root = doc.SelectSingleNode("/alerts");
+
+            //criar a <alert> fazer append child
+            XmlElement alertElement = doc.CreateElement("alert");
+            alertElement.SetAttribute("ativo", novaAlerta.Ativo.ToString());
+
+            XmlElement id = doc.CreateElement("id");
+            id.InnerText = novaAlerta.Id.ToString();
+
+            XmlElement tipo = doc.CreateElement("tipo");
+            tipo.InnerText = novaAlerta.Tipo;
+
+            XmlElement operacao = doc.CreateElement("operacao");
+            operacao.InnerText = novaAlerta.Operacao;
+
+            XmlElement valor1 = doc.CreateElement("valor1");
+            valor1.InnerText = novaAlerta.Valor1.ToString();
+
+            XmlElement valor2 = doc.CreateElement("valor2");
+            valor2.InnerText = novaAlerta.Valor2.ToString();
+
+            alertElement.AppendChild(id);
+            alertElement.AppendChild(tipo);
+            alertElement.AppendChild(operacao);
+            alertElement.AppendChild(valor1);
+            alertElement.AppendChild(valor2);
+            root.AppendChild(alertElement);
+
+            doc.Save(FILE_ALERT);
+            #endregion
         }
 
         private void comboBoxOperacao_SelectedValueChanged(object sender, EventArgs e)

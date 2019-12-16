@@ -32,8 +32,9 @@ namespace AlertsForm.models
             this.Valor2 = valor2;
             this.Ativo = true;
         }
-        public Alerta(string tipo, string operacao, double valor1)
+        public Alerta(int id, string tipo, string operacao, double valor1)
         {
+            this.Id = id;
             this.Tipo = tipo;
             this.Operacao = operacao;
             this.Valor1 = valor1;
