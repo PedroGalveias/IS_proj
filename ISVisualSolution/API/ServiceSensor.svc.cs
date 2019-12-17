@@ -67,7 +67,8 @@ namespace API
                 {
                     Id = (short)reader["Id"],
                     Battery = (short)reader["Battery"],
-                    Timestamp = (long)reader["Timestamp"]
+                    Timestamp = (long)reader["Timestamp"],
+                    Status = (ValueType)reader["Status"]
 
                 };
                
@@ -80,5 +81,46 @@ namespace API
 
         }
 
+        public void InvalidateSensor(short id)
+        {
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
+            Sensor sensor = null;
+            
+
+            SqlCommand cmd = new SqlCommand("SELECT status FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+            cmd.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader = cmd.ExecuteReader();
+          
+
+            while (reader.Read())
+            {
+                sensor = new Sensor
+                {
+                    Id = (short)reader["Id"],
+                    Battery = (short)reader["Battery"],
+                    Timestamp = (long)reader["Timestamp"],
+                    Status = (ValueType)reader["Status"]
+
+                };
+
+            }
+
+
+            if (sensor.Status == ValueType.VALID)
+            {
+                sensor.Status = ValueType.INVALID;
+            }
+
+            reader.Close();
+            sqlConnection.Close();
+
+
+        }
+
+        public void UpdateSensor(short id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
