@@ -77,63 +77,50 @@ namespace API
 
             cmd = new SqlCommand("SELECT Sensor_Id, reading FROM @table", sqlConnection);
 
-            throw new NotImplementedException();
+
+            return reading;
         }
 
-        public Reading GetLatestReading(short sensorId)
+        public Reading GetReading(short sensorId, long timestamp)
         {
-            Sensor sensor = GetSensorById(sensorId);
-
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            List<String> sensorTypes = new List<string>();
-            Reading reading = null;
-
-            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
-
-            sqlConnection.Open();
-
-            SqlDataReader reader = cmd.ExecuteReader();
-
-            while(reader.Read())
-            {
-                sensorTypes.Add(reader.GetString(0));
-            }
-
-            cmd = new SqlCommand("SELECT Sensor_Id, reading FROM @table", sqlConnection);
-
             throw new NotImplementedException();
         }
 
-        public Sensor GetSensorById(int id)
+        public Sensor GetSensorById(short id)
         {
             SqlConnection sqlConnection = new SqlConnection(connectionString);
             Sensor sensor = null;
 
             sqlConnection.Open();
 
-            SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Sensores WHERE Id = @id", sqlConnection);
-            cmd.Parameters.AddWithValue("@id", id);
-            
-            SqlDataReader reader = cmd.ExecuteReader();
+            List<String> sensorTypes = new List<string>();
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
 
+            SqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
+                sensorTypes.Add(reader.GetString(0));
+            }
 
-               
-                int battery = reader.GetInt32(1);
+            reader.Close();
+            cmd = new SqlCommand("SELECT * FROM dbo.Sensores WHERE Id = @id", sqlConnection);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                short battery = reader.GetInt16(1);
                 long timestamp = reader.GetInt64(2);
-
 
                 sensor = new Sensor
                 {
                     Id = id,
                     Battery = battery,
-                    Timestamp = timestamp
-
+                    Timestamp = timestamp,
+                    SensorTypes = sensorTypes
                 };
-
-
             }
 
             reader.Close();
@@ -142,52 +129,41 @@ namespace API
             return sensor;
             
         }
+       
 
-        public void InvalidateSensor(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        /*
-        public void InvalidateSensor(short id)
+        public void InvalidateSensorReading(short sensorId, long timeStamp)
         {
            SqlConnection sqlConnection = new SqlConnection(connectionString);
            sqlConnection.Open();
-           Sensor sensor = null;
+           Sensor sensor = GetSensorById(sensorId);
 
 
-           SqlCommand cmd = new SqlCommand("SELECT status FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
-           cmd.Parameters.AddWithValue("@id", id);
+           //SqlCommand cmd = new SqlCommand("SELECT status FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+           //cmd.Parameters.AddWithValue("@id", sensorId);
+           //SqlDataReader reader = cmd.ExecuteReader();
+
+           List<String> sensorTypes = new List<string>();
+           Reading reading = null;
+
+           SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
            SqlDataReader reader = cmd.ExecuteReader();
+           sqlConnection.Open();
 
+           reader = cmd.ExecuteReader();
 
            while (reader.Read())
            {
-               sensor = new Sensor
-               {
-                   Id = (short)reader["Id"],
-                   Battery = (short)reader["Battery"],
-                   Timestamp = (long)reader["Timestamp"],
-                   // Status = (ValueType)reader["Status"]
-
-               };
-
+               sensorTypes.Add(reader.GetString(0));
            }
-
-
-           if (sensor.Status == ValueType.VALID)
-           {
-               sensor.Status = ValueType.INVALID;
-           }
+           
+           
 
            reader.Close();
            sqlConnection.Close();
 
-
         }
-        */
 
-        public void UpdateSensor(int id)
+        public void UpdateSensor(short id)
         {
             throw new NotImplementedException();
         }

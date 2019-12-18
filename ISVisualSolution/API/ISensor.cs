@@ -16,26 +16,29 @@ namespace API
 		List<Sensor> GetAllSensors();
 
 		[OperationContract]
-		Sensor GetSensorById(int id);
+		Sensor GetSensorById(short id);
 
         [OperationContract]
-        void InvalidateSensor(int id);
+        void InvalidateSensorReading(short sensorId, long timestamp);
               
         [OperationContract]
-        void UpdateSensor(int id);
+        void UpdateSensor(short id);
 
 		[OperationContract]
 		List<Reading> GetAllReadings(short sensorId);
 
 		[OperationContract]
 		Reading GetLatestReading(short sensorId);
+
+		[OperationContract]
+		Reading GetReading(short sensorId, long timestamp);
 	}
 
 	[DataContract]
 	public class Sensor
 	{
 		[DataMember]
-		public Dictionary<string, string> SensorType { get; }
+		public List<string> SensorTypes { get; set; }
 
 		[DataMember]
 		public int Id { get; set; }
@@ -66,7 +69,7 @@ namespace API
 		public String SensorType { get; set; }
 
 		[DataMember]
-		public float reading { get; set; }
+		public Dictionary<string, string> Readings { get; }
 
 		[DataMember]
 		public long Timestamp { get; set; }
