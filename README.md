@@ -75,7 +75,7 @@ you to first draw the system architecture and only after that start implement it
 
 ## Versioning
 
-We are using [Sourcetree](https://www.sourcetreeapp.com/) and [Gitkraken](https://www.gitkraken.com/) for versioning.
+We are using [Sourcetree](https://www.sourcetreeapp.com/) and [GitKraken](https://www.gitkraken.com/) for versioning.
 
 
 ## Browsers support
