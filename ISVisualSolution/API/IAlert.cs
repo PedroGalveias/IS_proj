@@ -13,10 +13,10 @@ namespace API
     {
 
         [OperationContract]
-        List<Sensor> GetAllAlerts();
+        List<Alert> GetAllAlerts();
 
         [OperationContract]
-        Sensor GetAlertsById(short id);
+        Alert GetAlertsById(short id);
     }
 
 
