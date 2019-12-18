@@ -19,10 +19,11 @@ namespace BaseDados
         static void Main(string[] args)
         {
             Console.Write("Escreva um ip: ");
-            string ip = Console.ReadLine();
-            ip.Trim();
+            //string ip = Console.ReadLine();
+            string ip = "";
+            //ip.Trim();
             ip = "127.0.0.1";   
-            Console.WriteLine("Seu ip é: " + ip);
+            //Console.WriteLine("Seu ip é: " + ip);
             MqttClient mClient = new MqttClient(ip);
 
             mClient.Connect(Guid.NewGuid().ToString());
@@ -59,8 +60,8 @@ namespace BaseDados
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
                         //int id = Int32.Parse(response.id);
-                        int id = (int)response["id"];
-                        int battery = (int)response["batt"];
+                        short id = (short)response["id"];
+                        short battery = (short)response["batt"];
                         long time = (long)response["time"];
                         string[] arrayTypes = response["sensors"].ToObject<string[]>();
                         // Console.WriteLine(response[arr]);
@@ -71,10 +72,10 @@ namespace BaseDados
                         connection.Open();
                         SqlCommand cmd = new SqlCommand("SELECT Id FROM Sensores", connection);
                         SqlDataReader reader = cmd.ExecuteReader();
-                        List<int> listaIdSensores = new List<int>();
+                        List<short> listaIdSensores = new List<short>();
                         while (reader.Read())
                         {
-                            listaIdSensores.Add((int)reader["Id"]);
+                            listaIdSensores.Add((short)reader["Id"]);
                         }
                         reader.Close();
                         //TRAER DADOS DOS TYPES
@@ -100,7 +101,7 @@ namespace BaseDados
                         {
                             if (!listaTypes.Contains(item.ToUpper()))
                             {
-                                string comdStr = $"CREATE TABLE {item} ([Id] INT   IDENTITY (1, 1) NOT NULL PRIMARY KEY,[Timestamp] BIGINT  NOT NULL, [Sensor_Id] INT NOT NULL,[{item}] FLOAT NOT NULL)";
+                                string comdStr = $"CREATE TABLE {item} ([Id] SMALLINT IDENTITY (1, 1) NOT NULL PRIMARY KEY,[Timestamp] BIGINT NOT NULL, [Sensor_Id] SMALLINT NOT NULL,[Reading] FLOAT NOT NULL, [Status] BIT NOT NULL DEFAULT 1)";
                                 sqlComd = new SqlCommand(comdStr, connection);
                                 // sqlCommand.Parameters.AddWithValue("@name", item
                                 resultado = sqlComd.ExecuteNonQuery();
@@ -125,17 +126,16 @@ namespace BaseDados
                             sqlCommand.Parameters.AddWithValue("@battery", battery);
                             sqlCommand.Parameters.AddWithValue("@timestamp", time);
 
-
                             int result = sqlCommand.ExecuteNonQuery();
                             if (result > 0)
                             {
                                 Console.WriteLine($"------------------SENSOR NOVO INSERIDO com Id:{id}-------------");
 
-                                foreach (string item in arrayTypes)
+								foreach (string item in arrayTypes)
                                 {
                                     float dado = (float)response[item];
                                     Console.WriteLine($"------------INSERIDA LEITURA NA TABELA {item.ToUpper()} COM SENSOR_ID:{id} TIMESTAMP:{time} {item}:{dado}----------------------");
-                                    sqlComd = new SqlCommand($"INSERT INTO {item} (Sensor_Id,Timestamp,{item})VALUES(@id,@timestamp,@dado)", connection);
+                                    sqlComd = new SqlCommand($"INSERT INTO {item} (Sensor_Id,Timestamp,Reading)VALUES(@id,@timestamp,@dado)", connection);
                                     sqlComd.Parameters.AddWithValue("@id", id);
                                     sqlComd.Parameters.AddWithValue("@timestamp", time);
                                     // sqlCommand.Parameters.AddWithValue("@name", item);
@@ -144,7 +144,6 @@ namespace BaseDados
                                 }
                                 connection.Close();
                                 return;
-
                             }
                             else
                             {
@@ -152,10 +151,8 @@ namespace BaseDados
                                 Console.WriteLine("ERRO dados nao inseridos em tabelas");
                                 return;
                             }
-
                             #endregion
                         }
-
 
                         //TRAER ULTIMA LEITURA DO SENSOR
                         connection.Open();
@@ -183,7 +180,7 @@ namespace BaseDados
                                 {
                                     float dado = (float)response[item];
                                     Console.WriteLine($"------------INSERIDA LEITURA NA TABELA {item.ToUpper()} COM SENSOR_ID:{id} TIMESTAMP:{time} {item}:{dado}----------------------");
-                                    sqlComd = new SqlCommand($"INSERT INTO {item} (Sensor_Id,Timestamp,{item})VALUES(@id,@timestamp,@dado)", connection);
+                                    sqlComd = new SqlCommand($"INSERT INTO {item} (Sensor_Id,Timestamp,Reading)VALUES(@id,@timestamp,@dado)", connection);
                                     sqlComd.Parameters.AddWithValue("@id", id);
                                     sqlComd.Parameters.AddWithValue("@timestamp", time);
                                     // sqlCommand.Parameters.AddWithValue("@name", item);
@@ -215,7 +212,7 @@ namespace BaseDados
                         double valor1 = (double)response["Valor1"];
                         double valor2 = (double)response["Valor2"];
                         bool ativo = (bool)response["Ativo"];
-                        int sensor_id=(int)response["Sensor_Id"];
+                        short sensor_id=(short)response["Sensor_Id"];
 
                         SqlCommand sqlCommand = new SqlCommand("INSERT INTO Alerts (Tipo,Operacao,Valor1,Valor2,Ativo,Sensor_Id) VALUES(@Tipo,@Operacao,@Valor1,@Valor2,@Ativo,@sensor_id)", connection);
                         sqlCommand.Parameters.AddWithValue("@Tipo",tipo);
