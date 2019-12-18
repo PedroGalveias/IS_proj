@@ -80,6 +80,30 @@ namespace API
             throw new NotImplementedException();
         }
 
+        public Reading GetLatestReading(short sensorId)
+        {
+            Sensor sensor = GetSensorById(sensorId);
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            List<String> sensorTypes = new List<string>();
+            Reading reading = null;
+
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+
+            sqlConnection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while(reader.Read())
+            {
+                sensorTypes.Add(reader.GetString(0));
+            }
+
+            cmd = new SqlCommand("SELECT Sensor_Id, reading FROM @table", sqlConnection);
+
+            throw new NotImplementedException();
+        }
+
         public Sensor GetSensorById(int id)
         {
             SqlConnection sqlConnection = new SqlConnection(connectionString);
