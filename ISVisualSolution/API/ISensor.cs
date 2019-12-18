@@ -16,13 +16,13 @@ namespace API
 		List<Sensor> GetAllSensors();
 
 		[OperationContract]
-		Sensor GetSensorById(short id);
+		Sensor GetSensorById(int id);
 
         [OperationContract]
-        void InvalidateSensor(short id);
+        void InvalidateSensor(int id);
               
         [OperationContract]
-        void UpdateSensor(short id);
+        void UpdateSensor(int id);
 
 
     }
@@ -34,20 +34,21 @@ namespace API
 		public Dictionary<string, string> SensorType { get; }
 
 		[DataMember]
-		public short Id { get; set; }
+		public int Id { get; set; }
 
 		[DataMember]
-		public short Battery { get; set; }
+		public int Battery { get; set; }
 
 		[DataMember]
 		public long Timestamp { get; set; }
 
-        [DataMember]
-        public ValueType Status { get; set; }
-    }
 
-    
-    public enum ValueType
+		//  [DataMember]
+		//public ValueType Status { get; set; }
+	}
+
+
+	public enum ValueType
     {
         INVALID, VALID
     }

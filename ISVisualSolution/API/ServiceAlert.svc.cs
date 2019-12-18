@@ -13,6 +13,17 @@ namespace API
     {
         public void DoWork()
         {
+            throw new NotImplementedException();
+        }
+
+        public Sensor GetAlertsById(short id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Sensor> GetAllAlerts()
+        {
+            throw new NotImplementedException();
         }
     }
 }
