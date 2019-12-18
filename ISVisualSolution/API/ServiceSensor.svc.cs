@@ -23,20 +23,31 @@ namespace API
 
         public List<Sensor> GetAllSensors()
         {
-
             SqlConnection sqlConnection = new SqlConnection(connectionString);
             // Sensor sensor = new Sensor();
             List<Sensor> sensors = new List<Sensor>();
 
-
             sqlConnection.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Sensores", sqlConnection);
+
+            List<String> sensorTypes = new List<string>();
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+
             SqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                int id = reader.GetInt32(0);
-                int battery = reader.GetInt32(1);
+                sensorTypes.Add(reader.GetString(0));
+            }
+
+            reader.Close();
+
+            cmd = new SqlCommand("SELECT * FROM Sensores", sqlConnection);
+            reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                short id = reader.GetInt16(0);
+                short battery = reader.GetInt16(1);
                 long timestamp = reader.GetInt64(2);
 
 
@@ -44,8 +55,8 @@ namespace API
                 {
                     Id = id,
                     Battery = battery,
-                    Timestamp = timestamp
-
+                    Timestamp = timestamp,
+                    SensorTypes = sensorTypes
                 };
                 sensors.Add(sensor);
             }
@@ -127,7 +138,6 @@ namespace API
             sqlConnection.Close();
 
             return sensor;
-            
         }
        
 
