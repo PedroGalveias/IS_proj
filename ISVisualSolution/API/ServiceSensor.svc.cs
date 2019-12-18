@@ -16,6 +16,11 @@ namespace API
     {
         public static string connectionString = Properties.Settings.Default.ConnectionString;
 
+        public List<Reading> GetAllReadings(short sensorId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<Sensor> GetAllSensors()
         {
 
@@ -48,9 +53,31 @@ namespace API
             reader.Close();
             sqlConnection.Close();
 
-
             return sensors;
+        }
 
+        public Reading GetLatestReading(short sensorId)
+        {
+            Sensor sensor = GetSensorById(sensorId);
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            List<String> sensorTypes = new List<string>();
+            Reading reading = null;
+
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+
+            sqlConnection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while(reader.Read())
+            {
+                sensorTypes.Add(reader.GetString(0));
+            }
+
+            cmd = new SqlCommand("SELECT Sensor_Id, reading FROM @table", sqlConnection);
+
+            throw new NotImplementedException();
         }
 
         public Sensor GetSensorById(int id)
@@ -60,7 +87,7 @@ namespace API
 
             sqlConnection.Open();
 
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Sensores WHERE Id = @id", sqlConnection);
             cmd.Parameters.AddWithValue("@id", id);
             
             SqlDataReader reader = cmd.ExecuteReader();

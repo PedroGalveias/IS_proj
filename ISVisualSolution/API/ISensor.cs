@@ -24,8 +24,12 @@ namespace API
         [OperationContract]
         void UpdateSensor(int id);
 
+		[OperationContract]
+		List<Reading> GetAllReadings(short sensorId);
 
-    }
+		[OperationContract]
+		Reading GetLatestReading(short sensorId);
+	}
 
 	[DataContract]
 	public class Sensor
@@ -52,4 +56,19 @@ namespace API
     {
         INVALID, VALID
     }
+
+	public class Reading
+	{
+		[DataMember]
+		public int Id { get; set; }
+
+		[DataMember]
+		public String SensorType { get; set; }
+
+		[DataMember]
+		public float reading { get; set; }
+
+		[DataMember]
+		public long Timestamp { get; set; }
+	}
 }
