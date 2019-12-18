@@ -101,7 +101,7 @@ namespace BaseDados
                         {
                             if (!listaTypes.Contains(item.ToUpper()))
                             {
-                                string comdStr = $"CREATE TABLE {item} ([Id] SMALLINT IDENTITY (1, 1) NOT NULL PRIMARY KEY,[Timestamp] BIGINT NOT NULL, [Sensor_Id] SMALLINT NOT NULL,[Reading] FLOAT NOT NULL, [Status] BIT NOT NULL DEFAULT 1)";
+                                string comdStr = $"CREATE TABLE {item} ([Id] SMALLINT IDENTITY (1, 1) NOT NULL PRIMARY KEY,[Timestamp] BIGINT NOT NULL, [Sensor_Id] SMALLINT NOT NULL,[Reading] FLOAT NOT NULL, [Status] SMALLINT NOT NULL DEFAULT 1)";
                                 sqlComd = new SqlCommand(comdStr, connection);
                                 // sqlCommand.Parameters.AddWithValue("@name", item
                                 resultado = sqlComd.ExecuteNonQuery();

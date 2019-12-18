@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -41,6 +41,11 @@ namespace API
 
             reader.Close();
 
+            if (sensorTypes.Count() == 0)
+            {
+                return null;
+            }
+
             cmd = new SqlCommand("SELECT * FROM Sensores", sqlConnection);
             reader = cmd.ExecuteReader();
 
@@ -75,7 +80,69 @@ namespace API
 
         public Reading GetReading(short sensorId, long timestamp)
         {
-            throw new NotImplementedException();
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            List<String> sensorTypes = new List<string>();
+            Reading reading = null;
+
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+
+            sqlConnection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                sensorTypes.Add(reader.GetString(0));
+            }
+
+            reader.Close();
+
+            if (sensorTypes.Count() == 0)
+            {
+                return null;
+            }
+
+            string attributes = "";
+            string from = "";
+            int counter = 1;
+
+            foreach (string type in sensorTypes)
+            {
+                from += $"{ type } t{ counter }, ";
+                attributes += $"t{ counter }.Reading, ";
+                counter++;
+            }
+
+            string select = $"SELECT t1.Sensor_Id, { attributes } t1.Timestamp, t1.Status FROM { from } Sensores s WHERE t1.Sensor_Id = { sensorId } AND t1.Timestamp = { timestamp }";
+
+            cmd = new SqlCommand(select, sqlConnection);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+
+            short _sensorId = reader.GetInt16(0);
+            Dictionary<string, string> _readings = new Dictionary<string, string>();
+
+            counter = 1;
+            foreach (string type in sensorTypes)
+            {
+                float _float = (float) reader.GetSqlDouble(counter++).Value;
+                _readings.Add(type, _float.ToString());
+            }
+
+            long _timestamp = reader.GetInt64(counter++);
+            bool _status = reader.GetInt16(counter++) == 1 ? true : false;
+
+            reader.Close();
+
+            reading = new Reading
+            {
+                SensorId = _sensorId,
+                Readings = _readings,
+                Timestamp = _timestamp,
+                Status = _status
+            };
+
+            return reading;
         }
 
         public Sensor GetSensorById(short id)
@@ -96,6 +163,12 @@ namespace API
             }
 
             reader.Close();
+
+            if (sensorTypes.Count() == 0)
+            {
+                return null;
+            }
+
             cmd = new SqlCommand("SELECT * FROM dbo.Sensores WHERE Id = @id", sqlConnection);
             cmd.Parameters.AddWithValue("@id", id);
 

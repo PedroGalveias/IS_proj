@@ -48,12 +48,7 @@ namespace API
 
 		[DataMember]
 		public long Timestamp { get; set; }
-
-
-		//  [DataMember]
-		//public ValueType Status { get; set; }
 	}
-
 
 	public enum ValueType
     {
@@ -63,15 +58,15 @@ namespace API
 	public class Reading
 	{
 		[DataMember]
-		public int Id { get; set; }
+		public short SensorId { get; set; }
 
 		[DataMember]
-		public String SensorType { get; set; }
-
-		[DataMember]
-		public Dictionary<string, string> Readings { get; }
+		public Dictionary<string, string> Readings { get; set; }
 
 		[DataMember]
 		public long Timestamp { get; set; }
+
+		[DataMember]
+		public bool Status { get; set; }
 	}
 }
