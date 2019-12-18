@@ -41,10 +41,10 @@ namespace API
 		public List<string> SensorTypes { get; set; }
 
 		[DataMember]
-		public int Id { get; set; }
+		public short Id { get; set; }
 
 		[DataMember]
-		public int Battery { get; set; }
+		public short Battery { get; set; }
 
 		[DataMember]
 		public long Timestamp { get; set; }

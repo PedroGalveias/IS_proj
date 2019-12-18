@@ -70,26 +70,7 @@ namespace API
         public Reading GetLatestReading(short sensorId)
         {
             Sensor sensor = GetSensorById(sensorId);
-
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            List<String> sensorTypes = new List<string>();
-            Reading reading = null;
-
-            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
-
-            sqlConnection.Open();
-
-            SqlDataReader reader = cmd.ExecuteReader();
-
-            while(reader.Read())
-            {
-                sensorTypes.Add(reader.GetString(0));
-            }
-
-            cmd = new SqlCommand("SELECT Sensor_Id, reading FROM @table", sqlConnection);
-
-
-            return reading;
+            return GetReading(sensor.Id, sensor.Timestamp);
         }
 
         public Reading GetReading(short sensorId, long timestamp)
