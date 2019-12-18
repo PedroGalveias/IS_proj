@@ -14,86 +14,92 @@ namespace API
     {
         public static string connectionString = Properties.Settings.Default.ConnectionString;
 
-
-        public Alert GetAlertsById(short id)
+        public Alert GetAlertsById(int id)
         {
             SqlConnection sqlConnection = new SqlConnection(connectionString);
-            Alert alert = null;
-
-
             sqlConnection.Open();
-
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts WHERE WHERE Id=@id ", sqlConnection);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+            cmd.Parameters.AddWithValue("@id", id);
             SqlDataReader reader = cmd.ExecuteReader();
+            Alert alert = null;
 
             while (reader.Read())
             {
-               
-                    int id =reader.GetInt32(0),
-                    char tipo =reader.GetChars(1),
-                    Operacao = char.Parse((reader["Operacao"]).ToString()),
-                    Valor1 = float.Parse((reader["Valor1"]).ToString()),
-                    Valor2 = float.Parse((reader["Valor2"]).ToString()),
-                    SensorId = short.Parse((reader["SensorId"]).ToString())
 
 
                
+                string tipo = reader.GetString(1);
+                string operacao = reader.GetString(2);
+                float valor1 = reader.GetFloat(3);
+                float valor2 = reader.GetFloat(4);
+                int sensorId = reader.GetInt32(5);
+
+
+                alert = new Alert
+                {
+                    Id = id,
+                    Tipo = tipo,
+                    Operacao = operacao,
+                    Valor1 = valor1,
+                    Valor2 = valor2,
+                    SensorId = sensorId
+
+                };
+
 
             }
+
             reader.Close();
             sqlConnection.Close();
+
             return alert;
 
         }
 
         public List<Alert> GetAllAlerts()
         {
-<<<<<<< Updated upstream
-            throw new NotImplementedException();
-        }
-
-        public Sensor GetAlertsById(short id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Sensor> GetAllAlerts()
-        {
-            throw new NotImplementedException();
-=======
-
             SqlConnection sqlConnection = new SqlConnection(connectionString);
-          
+            // Sensor sensor = new Sensor();
             List<Alert> alerts = new List<Alert>();
 
             sqlConnection.Open();
             SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts", sqlConnection);
             SqlDataReader reader = cmd.ExecuteReader();
 
+
             while (reader.Read())
             {
+                int id = reader.GetInt32(0);
+                string tipo = reader.GetString(1);
+                string operacao = reader.GetString(2);
+                float valor1 = reader.GetFloat(3);
+                float valor2 = reader.GetFloat(4);
+                int sensorId = reader.GetInt32(5);
+                
+
+
                 Alert alert = new Alert
                 {
-                    Id = short.Parse((reader["Id"]).ToString()),
-                    Tipo = char.Parse((reader["Tipo"]).ToString()),
-                    Operacao = char.Parse((reader["Operacao"]).ToString()),
-                    Valor1 = float.Parse((reader["Valor1"]).ToString()),
-                    Valor2 = float.Parse((reader["Valor2"]).ToString()),
-                    SensorId = short.Parse((reader["SensorId"]).ToString())
-
+                    Id = id,
+                    Tipo = tipo,
+                    Operacao = operacao,
+                    Valor1 = valor1,
+                    Valor2 = valor2,
+                    SensorId = sensorId
 
                 };
-                alerts.Add(alert);
 
+                alerts.Add(alert);
             }
+
             reader.Close();
             sqlConnection.Close();
 
             return alerts;
-
-
->>>>>>> Stashed changes
         }
-      
+
+
+
+     
     }
 }

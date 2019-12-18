@@ -25,7 +25,7 @@ namespace API
 
 
             sqlConnection.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Sensores", sqlConnection);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Sensores", sqlConnection);
             SqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read())
