@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,6 +15,16 @@ namespace API
     public class ServiceSensor : ISensor
     {
         public static string connectionString = Properties.Settings.Default.ConnectionString;
+
+        /**
+         * *** TODO ***
+         * GET SENSOR BY LOCATION
+         * GET READING CHANGE STATUS (VALID / INVALID)
+         * UPDATE SENSOR
+         * PERSONAL SENSORS
+         * *** MADE WITH ❤ BY PETER ***
+         * *** UwU ***
+         */
 
         public List<Reading> GetLast150Readings(short sensorId)
         {

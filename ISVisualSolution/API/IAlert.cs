@@ -11,7 +11,6 @@ namespace API
     [ServiceContract]
     public interface IAlert
     {
-
         [OperationContract]
         List<Alert> GetAllAlerts();
 
@@ -23,22 +22,22 @@ namespace API
     [DataContract]
     public class Alert
     {
-
         [DataMember]
         public int Id { get; set; }
 
         [DataMember]
         public string Tipo { get; set; }
+
         [DataMember]
         public string Operacao { get; set; }
+
         [DataMember]
-     
         public float Valor1 { get; set; }
+
         [DataMember]
         public float Valor2 { get; set; }
+
         [DataMember]
         public int SensorId { get; set; }
-
     }
-
 }

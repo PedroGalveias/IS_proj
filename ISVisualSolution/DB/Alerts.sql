@@ -6,6 +6,6 @@
     [Valor1] FLOAT NOT NULL, 
     [Valor2] FLOAT NOT NULL, 
     [Ativo] SMALLINT NOT NULL, 
-    [Sensor_Id] INT NOT NULL,
+    [Sensor_Id] SMALLINT NOT NULL,
 
 )
