@@ -11,46 +11,43 @@ namespace API
 	[ServiceContract]
 	public interface ISensor
 	{
-
 		[OperationContract]
 		List<Sensor> GetAllSensors();
 
 		[OperationContract]
-		Sensor GetSensorById(int id);
+		Sensor GetSensorById(short id);
 
         [OperationContract]
-        void InvalidateSensor(int id);
+		bool InvalidateSensorReading(short sensorId, long timestamp);
               
         [OperationContract]
-        void UpdateSensor(int id);
+		bool UpdateSensor(short id);
 
 		[OperationContract]
-		List<Reading> GetAllReadings(short sensorId);
+		List<Reading> GetLast150Readings(short sensorId);
 
 		[OperationContract]
 		Reading GetLatestReading(short sensorId);
+
+		[OperationContract]
+		Reading GetReading(short sensorId, long timestamp);
 	}
 
 	[DataContract]
 	public class Sensor
 	{
 		[DataMember]
-		public Dictionary<string, string> SensorType { get; }
+		public List<string> SensorTypes { get; set; }
 
 		[DataMember]
-		public int Id { get; set; }
+		public short Id { get; set; }
 
 		[DataMember]
-		public int Battery { get; set; }
+		public short Battery { get; set; }
 
 		[DataMember]
 		public long Timestamp { get; set; }
-
-
-		//  [DataMember]
-		//public ValueType Status { get; set; }
 	}
-
 
 	public enum ValueType
     {
@@ -60,15 +57,15 @@ namespace API
 	public class Reading
 	{
 		[DataMember]
-		public int Id { get; set; }
+		public short SensorId { get; set; }
 
 		[DataMember]
-		public String SensorType { get; set; }
-
-		[DataMember]
-		public float reading { get; set; }
+		public Dictionary<string, string> Readings { get; set; }
 
 		[DataMember]
 		public long Timestamp { get; set; }
+
+		[DataMember]
+		public ValueType Status { get; set; }
 	}
 }

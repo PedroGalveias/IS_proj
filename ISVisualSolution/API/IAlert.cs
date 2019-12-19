@@ -11,34 +11,33 @@ namespace API
     [ServiceContract]
     public interface IAlert
     {
-
         [OperationContract]
         List<Alert> GetAllAlerts();
 
         [OperationContract]
-        Alert GetAlertsById(short id);
+        Alert GetAlertsById(int id);
     }
 
 
     [DataContract]
     public class Alert
     {
+        [DataMember]
+        public int Id { get; set; }
 
         [DataMember]
-        public short Id { get; set; }
+        public string Tipo { get; set; }
 
         [DataMember]
-        public Char Tipo { get; set; }
+        public string Operacao { get; set; }
+
         [DataMember]
-        public Char Operacao { get; set; }
-        [DataMember]
-     
         public float Valor1 { get; set; }
+
         [DataMember]
         public float Valor2 { get; set; }
+
         [DataMember]
-        public short SensorId { get; set; }
-
+        public int SensorId { get; set; }
     }
-
 }
