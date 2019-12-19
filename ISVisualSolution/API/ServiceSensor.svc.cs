@@ -16,9 +16,89 @@ namespace API
     {
         public static string connectionString = Properties.Settings.Default.ConnectionString;
 
-        public List<Reading> GetAllReadings(short sensorId)
+        public List<Reading> GetLast150Readings(short sensorId)
         {
-            throw new NotImplementedException();
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            List<String> sensorTypes = new List<string>();
+            List<Reading> readings = new List<Reading>();
+
+            SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+
+            sqlConnection.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                sensorTypes.Add(reader.GetString(0));
+            }
+
+            reader.Close();
+
+            if (sensorTypes.Count() == 0)
+            {
+                return null;
+            }
+
+            string attributes = "";
+            string from = "";
+            int counter = 1;
+
+            foreach (string type in sensorTypes)
+            {
+                from += $"{ type } t{ counter }, ";
+                attributes += $"t{ counter }.Reading, ";
+                counter++;
+            }
+
+            string select = $"SELECT t1.Sensor_Id, { attributes } t1.Timestamp, t1.Status FROM { from } Sensores s WHERE t1.Sensor_Id = { sensorId }";
+
+            cmd = new SqlCommand(select, sqlConnection);
+            reader = cmd.ExecuteReader();
+
+            int read_counter = 0;
+
+            while(reader.Read())
+            {
+                read_counter++;
+
+                short _sensorId = reader.GetInt16(0);
+                Dictionary<string, string> _readings = new Dictionary<string, string>();
+
+                counter = 1;
+                foreach (string type in sensorTypes)
+                {
+                    float _float = (float)reader.GetSqlDouble(counter++).Value;
+                    _readings.Add(type, _float.ToString());
+                }
+
+                long _timestamp = reader.GetInt64(counter++);
+
+                // Int16 aux = (Int16)Convert.ToInt16((Int16)reader.GetSqlValue(counter++));
+
+                short aux = (short)reader.GetSqlInt16(counter++).Value;
+
+                bool _status = aux == 1 ? true : false; 
+
+                Reading reading = new Reading
+                {
+                    SensorId = _sensorId,
+                    Readings = _readings,
+                    Timestamp = _timestamp,
+                    Status = _status
+                };
+
+                readings.Add(reading);
+
+                if (read_counter >= 150)
+                {
+                    break;
+                }
+            }
+
+            reader.Close();
+
+            return readings;
         }
 
         public List<Sensor> GetAllSensors()
@@ -73,6 +153,7 @@ namespace API
         }
 
         public Reading GetLatestReading(short sensorId)
+
         {
             Sensor sensor = GetSensorById(sensorId);
             return GetReading(sensor.Id, sensor.Timestamp);

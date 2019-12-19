@@ -11,7 +11,6 @@ namespace API
 	[ServiceContract]
 	public interface ISensor
 	{
-
 		[OperationContract]
 		List<Sensor> GetAllSensors();
 
@@ -25,7 +24,7 @@ namespace API
 		bool UpdateSensor(short id);
 
 		[OperationContract]
-		List<Reading> GetAllReadings(short sensorId);
+		List<Reading> GetLast150Readings(short sensorId);
 
 		[OperationContract]
 		Reading GetLatestReading(short sensorId);
