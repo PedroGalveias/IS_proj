@@ -193,41 +193,31 @@ namespace API
 
             return sensor;
         }
-       
 
-        public void InvalidateSensorReading(short sensorId, long timeStamp)
+        public bool InvalidateSensorReading(short sensorId, long timestamp)
         {
-           SqlConnection sqlConnection = new SqlConnection(connectionString);
-           sqlConnection.Open();
-           Sensor sensor = GetSensorById(sensorId);
+            Reading reading = GetReading(sensorId, timestamp);
 
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
 
-           //SqlCommand cmd = new SqlCommand("SELECT status FROM Sensores WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
-           //cmd.Parameters.AddWithValue("@id", sensorId);
-           //SqlDataReader reader = cmd.ExecuteReader();
+            foreach (KeyValuePair<string, string> r in reading.Readings)
+            {
+                string select = $"UPDATE { r.Key } SET Status = 0 WHERE Sensor_Id = { reading.SensorId } AND Timestamp = { reading.Timestamp }";
 
-           List<String> sensorTypes = new List<string>();
-           Reading reading = null;
+                SqlCommand cmd = new SqlCommand(select, sqlConnection);
+                int result = cmd.ExecuteNonQuery();
 
-           SqlCommand cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
-           SqlDataReader reader = cmd.ExecuteReader();
-           sqlConnection.Open();
+                if (result <= 0)
+                {
+                    return false;
+                }
+            }
 
-           reader = cmd.ExecuteReader();
-
-           while (reader.Read())
-           {
-               sensorTypes.Add(reader.GetString(0));
-           }
-           
-           
-
-           reader.Close();
-           sqlConnection.Close();
-
+            return true;
         }
 
-        public void UpdateSensor(short id)
+        public bool UpdateSensor(short id)
         {
             throw new NotImplementedException();
         }

@@ -19,10 +19,10 @@ namespace API
 		Sensor GetSensorById(short id);
 
         [OperationContract]
-        void InvalidateSensorReading(short sensorId, long timestamp);
+		bool InvalidateSensorReading(short sensorId, long timestamp);
               
         [OperationContract]
-        void UpdateSensor(short id);
+		bool UpdateSensor(short id);
 
 		[OperationContract]
 		List<Reading> GetAllReadings(short sensorId);
