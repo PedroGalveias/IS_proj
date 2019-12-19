@@ -19,7 +19,6 @@ namespace API
         /**
          * *** TODO ***
          * GET SENSOR BY LOCATION
-         * GET READING CHANGE STATUS (VALID / INVALID)
          * UPDATE SENSOR
          * PERSONAL SENSORS
          * *** MADE WITH ❤ BY PETER ***
@@ -221,7 +220,7 @@ namespace API
             }
 
             long _timestamp = reader.GetInt64(counter++);
-            bool _status = reader.GetInt16(counter++) == 1 ? true : false;
+            ValueType _status = reader.GetInt16(counter++) == 1 ? ValueType.VALID : ValueType.INVALID;
 
             reader.Close();
 

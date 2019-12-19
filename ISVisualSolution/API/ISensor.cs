@@ -66,6 +66,6 @@ namespace API
 		public long Timestamp { get; set; }
 
 		[DataMember]
-		public bool Status { get; set; }
+		public ValueType Status { get; set; }
 	}
 }
