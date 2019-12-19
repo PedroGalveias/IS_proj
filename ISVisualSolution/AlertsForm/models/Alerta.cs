@@ -38,20 +38,21 @@ namespace AlertsForm.models
             this.Tipo = tipo;
             this.Operacao = operacao;
             this.Valor1 = valor1;
-            this.Ativo = true;
+            this.Ativo = true;           
         }
 
         public Alerta()
         {
         }
 
+        override
         public string ToString()
         {
-            if(this.Operacao == "Entre")
+            if(this.Operacao == "ENTRE")
             {
-            return "Alert_ID:" + Id.ToString() + " Tipo: " + Tipo + "Condicao => " + Operacao + " " + Valor1.ToString()+"&"+Valor2.ToString();
+            return "Alert_ID:" + Id.ToString() + " Tipo: " + Tipo + " Condicao => " + Operacao + " " + Valor1.ToString()+" & "+Valor2.ToString();
             }
-            return "Alert_ID:" + Id.ToString() + " Tipo: " + Tipo + "Condicao => " + Operacao + " " + Valor1.ToString();
+            return "Alert_ID:" + Id.ToString() + " Tipo: " + Tipo + " Condicao => " + Operacao + " a " + Valor1.ToString();
         }
     }
 }

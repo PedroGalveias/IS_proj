@@ -35,6 +35,7 @@
             this.listBoxCondicoesDesativas = new System.Windows.Forms.ListBox();
             this.groupBoxDesativas = new System.Windows.Forms.GroupBox();
             this.groupBoxNews = new System.Windows.Forms.GroupBox();
+            this.buttonAtualizar = new System.Windows.Forms.Button();
             this.numericUpDownValor2 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownValor1 = new System.Windows.Forms.NumericUpDown();
             this.buttonAdicionar = new System.Windows.Forms.Button();
@@ -59,12 +60,12 @@
             this.listBoxCondicoesAtivas.Location = new System.Drawing.Point(15, 30);
             this.listBoxCondicoesAtivas.Margin = new System.Windows.Forms.Padding(4);
             this.listBoxCondicoesAtivas.Name = "listBoxCondicoesAtivas";
-            this.listBoxCondicoesAtivas.Size = new System.Drawing.Size(231, 260);
+            this.listBoxCondicoesAtivas.Size = new System.Drawing.Size(445, 180);
             this.listBoxCondicoesAtivas.TabIndex = 0;
             // 
             // buttonAtivar
             // 
-            this.buttonAtivar.Location = new System.Drawing.Point(291, 25);
+            this.buttonAtivar.Location = new System.Drawing.Point(161, 213);
             this.buttonAtivar.Margin = new System.Windows.Forms.Padding(4);
             this.buttonAtivar.Name = "buttonAtivar";
             this.buttonAtivar.Size = new System.Drawing.Size(184, 59);
@@ -75,7 +76,7 @@
             // 
             // buttonDesativar
             // 
-            this.buttonDesativar.Location = new System.Drawing.Point(268, 30);
+            this.buttonDesativar.Location = new System.Drawing.Point(135, 218);
             this.buttonDesativar.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDesativar.Name = "buttonDesativar";
             this.buttonDesativar.Size = new System.Drawing.Size(184, 59);
@@ -92,7 +93,7 @@
             this.groupBoxAtivas.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxAtivas.Name = "groupBoxAtivas";
             this.groupBoxAtivas.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxAtivas.Size = new System.Drawing.Size(465, 309);
+            this.groupBoxAtivas.Size = new System.Drawing.Size(480, 309);
             this.groupBoxAtivas.TabIndex = 3;
             this.groupBoxAtivas.TabStop = false;
             this.groupBoxAtivas.Text = "Condicoes Ativas";
@@ -104,7 +105,7 @@
             this.listBoxCondicoesDesativas.Location = new System.Drawing.Point(35, 25);
             this.listBoxCondicoesDesativas.Margin = new System.Windows.Forms.Padding(4);
             this.listBoxCondicoesDesativas.Name = "listBoxCondicoesDesativas";
-            this.listBoxCondicoesDesativas.Size = new System.Drawing.Size(247, 244);
+            this.listBoxCondicoesDesativas.Size = new System.Drawing.Size(451, 180);
             this.listBoxCondicoesDesativas.TabIndex = 4;
             // 
             // groupBoxDesativas
@@ -115,13 +116,14 @@
             this.groupBoxDesativas.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxDesativas.Name = "groupBoxDesativas";
             this.groupBoxDesativas.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxDesativas.Size = new System.Drawing.Size(499, 303);
+            this.groupBoxDesativas.Size = new System.Drawing.Size(507, 303);
             this.groupBoxDesativas.TabIndex = 5;
             this.groupBoxDesativas.TabStop = false;
             this.groupBoxDesativas.Text = "Condicoes Desativas";
             // 
             // groupBoxNews
             // 
+            this.groupBoxNews.Controls.Add(this.buttonAtualizar);
             this.groupBoxNews.Controls.Add(this.numericUpDownValor2);
             this.groupBoxNews.Controls.Add(this.numericUpDownValor1);
             this.groupBoxNews.Controls.Add(this.buttonAdicionar);
@@ -136,10 +138,20 @@
             this.groupBoxNews.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxNews.Name = "groupBoxNews";
             this.groupBoxNews.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxNews.Size = new System.Drawing.Size(988, 199);
+            this.groupBoxNews.Size = new System.Drawing.Size(988, 182);
             this.groupBoxNews.TabIndex = 6;
             this.groupBoxNews.TabStop = false;
             this.groupBoxNews.Text = "Nova Alerta";
+            // 
+            // buttonAtualizar
+            // 
+            this.buttonAtualizar.Location = new System.Drawing.Point(847, 138);
+            this.buttonAtualizar.Name = "buttonAtualizar";
+            this.buttonAtualizar.Size = new System.Drawing.Size(117, 34);
+            this.buttonAtualizar.TabIndex = 12;
+            this.buttonAtualizar.Text = "Atualizar";
+            this.buttonAtualizar.UseVisualStyleBackColor = true;
+            this.buttonAtualizar.Click += new System.EventHandler(this.buttonAtualizar_Click);
             // 
             // numericUpDownValor2
             // 
@@ -174,7 +186,7 @@
             // 
             // buttonAdicionar
             // 
-            this.buttonAdicionar.Location = new System.Drawing.Point(847, 80);
+            this.buttonAdicionar.Location = new System.Drawing.Point(847, 68);
             this.buttonAdicionar.Margin = new System.Windows.Forms.Padding(4);
             this.buttonAdicionar.Name = "buttonAdicionar";
             this.buttonAdicionar.Size = new System.Drawing.Size(117, 54);
@@ -292,6 +304,7 @@
         private System.Windows.Forms.Button buttonLimpar;
         private System.Windows.Forms.NumericUpDown numericUpDownValor1;
         private System.Windows.Forms.NumericUpDown numericUpDownValor2;
+        private System.Windows.Forms.Button buttonAtualizar;
     }
 }
 

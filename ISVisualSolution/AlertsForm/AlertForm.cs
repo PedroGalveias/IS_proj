@@ -26,7 +26,7 @@ namespace AlertsForm
         const string TOPIC = "alerts";      
         string[] topicsSubscriber = { "bridge"};
         //enum Operacoes{MAIOR,MENOR,IGUAL,ENTRE};
-        string[] operacoes= { ">", "<", "=","Entre" };
+        string[] operacoes= { ">", "<", "=","ENTRE" };
         //**** TIPOS DEBERIAN SER TRAIDOS DE LA BD
         enum Tipos { HUMIDADE,TEMPERATURA,LUMINOSIDADE}
         //Dominio do broker
@@ -62,7 +62,9 @@ namespace AlertsForm
 
                     //MessageBox.Show(xmlNodeList[0].OuterXml);
 
-                    contador = Convert.ToInt16(xmlNodeList[0].OuterXml);
+                    contador = Convert.ToInt16(xmlNodeList[0].InnerXml);
+
+                    contador++; //para començar pelo seguinte ID
                 }catch(Exception e)
                 {
                     MessageBox.Show(e.Message);
@@ -79,7 +81,11 @@ namespace AlertsForm
             comboBoxType.DataSource = Enum.GetNames(typeof(Tipos));
 
             #region atualizarListas
-
+            GetListOfAlertasAtivas();
+            GetListOfAlertasDesativas();
+            listBoxCondicoesAtivas.DataSource = alertasAtivas;
+            listBoxCondicoesDesativas.DataSource = alertasDesativas;
+            AtualizarListaAlertas();
             #endregion
 
             #region Compare Alerts with msg
@@ -105,15 +111,15 @@ namespace AlertsForm
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             #endregion
         }
-        private List<Alerta> GetListOfAlertasAtivas()
+        private void GetListOfAlertasAtivas()
         {
-            List<Alerta> alertasAtivas = new List<Alerta>();
+            alertasAtivas = new List<Alerta>();
             if (File.Exists(FILE_ALERT))
             {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(FILE_ALERT);
 
-                XmlNodeList alertsA = doc.SelectNodes("/alerts/alert[@ativo ='true']");
+                XmlNodeList alertsA = doc.SelectNodes("/alerts/alert[@ativo ='True']");
                 foreach (XmlNode item in alertsA)
                 {
                     //criar instancia de book y adicionar a lista
@@ -129,7 +135,33 @@ namespace AlertsForm
                     alertasAtivas.Add(a);
                 }
             }
-            return alertasAtivas;
+            return ;
+        }
+        private void GetListOfAlertasDesativas()
+        {
+            alertasDesativas = new List<Alerta>();
+            if (File.Exists(FILE_ALERT))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(FILE_ALERT);
+
+                XmlNodeList alertsD = doc.SelectNodes("/alerts/alert[@ativo ='False']");
+                foreach (XmlNode item in alertsD)
+                {
+                    //criar instancia de book y adicionar a lista
+                    Alerta a = new Alerta
+                    {
+                        Id = Convert.ToInt16(item["id"].InnerText),
+                        Tipo = item["tipo"].InnerText,
+                        Operacao = item["operacao"].InnerText,
+                        Valor1 = double.Parse(item["valor1"].InnerText, NumberFormatInfo.InvariantInfo),
+                        Valor2 = double.Parse(item["valor2"].InnerText, NumberFormatInfo.InvariantInfo),
+                        Ativo = false
+                    };
+                    alertasDesativas.Add(a);
+                }
+            }
+            return;
         }
         private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
@@ -167,10 +199,32 @@ namespace AlertsForm
         {
             double valor1Alerta = (double)numericUpDownValor1.Value;
             double valor2Alerta = (double)numericUpDownValor2.Value;
-            String operacaoAlerta = comboBoxOperacao.SelectedItem.ToString();
+            String operacaoAlerta;
+            switch (comboBoxOperacao.SelectedItem.ToString())
+            {
+                case ">":
+                    operacaoAlerta = "MAIOR";
+                    break;
+                case "<":
+                    operacaoAlerta = "MENOR";
+                    break;
+                case "=":
+                    operacaoAlerta = "IGUAL";
+                    break;
+                default:
+                    operacaoAlerta = "ENTRE";
+                    break;
+            }
+
+            if(valor1Alerta == valor2Alerta && operacaoAlerta == "ENTRE")
+            {
+                MessageBox.Show("Error: escolha 2 valores diferentes para a operação *ENTRE*");
+                return;
+            }
+            
             String tipoSensor = comboBoxType.SelectedItem.ToString();
             Alerta novaAlerta;
-            if (operacaoAlerta == "Entre")
+            if (operacaoAlerta == "ENTRE")
             {
             novaAlerta= new Alerta(contador,tipoSensor, operacaoAlerta, valor1Alerta, valor2Alerta, true);             
             }
@@ -195,7 +249,6 @@ namespace AlertsForm
 
                 XmlNode alertsNode = doc.CreateElement("alerts");
                 doc.AppendChild(alertsNode);
-
 
                 doc.Save(FILE_ALERT);
             }
@@ -231,11 +284,14 @@ namespace AlertsForm
 
             doc.Save(FILE_ALERT);
             #endregion
+
+            alertasAtivas.Add(novaAlerta);
+            AtualizarListaAlertas();
         }
 
         private void comboBoxOperacao_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (comboBoxOperacao.SelectedItem.ToString() == "Entre")
+            if (comboBoxOperacao.SelectedItem.ToString() == "ENTRE")
             {
                 numericUpDownValor2.Visible = true;
                 return;
@@ -292,7 +348,7 @@ namespace AlertsForm
                 return;
             }
         }
-
+        #region ATIVAR e DESATIVAR ALERTAS
         private void buttonDesativar_Click(object sender, EventArgs e)
         {
             if (listBoxCondicoesAtivas.SelectedValue == null)
@@ -301,64 +357,83 @@ namespace AlertsForm
                 return;
             }
 
-            mudarEstado();
-           
+            mudarEstado(0);
+            AtualizarListaAlertas();
+
         }
-
-        private void mudarEstado()
-        {
-            try
-            {
-                Alerta alerta = (Alerta)listBoxCondicoesAtivas.SelectedValue;
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand("UPDATE Alerts SET Ativo=@ativo WHERE Id=@idAlert", conn);
-                    cmd.Parameters.AddWithValue("@ativo", !alerta.Ativo);
-                    cmd.Parameters.AddWithValue("@idAlert", alerta.Id);
-
-                    int result = cmd.ExecuteNonQuery();//devuelve cuantos registros fueron afectados
-                    conn.Close();
-                    if (result > 0)
-                    {
-                        MessageBox.Show("OK ...");
-                        return;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error Alert Not found ...");
-                        return;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Error ...");
-                return;
-            }
-        }
-
+        
         private void buttonAtivar_Click(object sender, EventArgs e)
         {
-            if (listBoxCondicoesAtivas.SelectedValue == null)
+            if (listBoxCondicoesDesativas.SelectedValue == null)
             {
                 MessageBox.Show("Error Nenhum elemento selecionado ...");
                 return;
             }
 
-            mudarEstado();
+            mudarEstado(1);
+            AtualizarListaAlertas();
+        }
+        #endregion
+        private void mudarEstado(int aux)
+        {
+            try
+            {
+                Alerta alertaOld;
+                if (aux == 0)
+                {
+                alertaOld = (Alerta)listBoxCondicoesAtivas.SelectedValue;
+                }
+                else
+                {
+                alertaOld = (Alerta)listBoxCondicoesDesativas.SelectedValue;
+                }           
+                Alerta alerta = alertaOld;
+                alerta.Ativo = !alerta.Ativo;
+                #region UpdateXMLAlert
+                
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(FILE_ALERT);
+
+                    XmlNode nodeAlerta = doc.SelectSingleNode($"/alerts/alert[id='{alerta.Id.ToString()}']");
+
+                if (nodeAlerta != null)
+                {
+                    nodeAlerta.Attributes[0].Value = alerta.Ativo.ToString();
+                        doc.Save(FILE_ALERT);
+                    }
+
+                #endregion
+
+                if(alerta.Ativo == false)
+                {
+                alertasAtivas.Remove(alertaOld);
+                alertasDesativas.Add(alerta);            
+                }
+                else
+                {
+                    alertasAtivas.Add(alerta);
+                    alertasDesativas.Remove(alertaOld);
+                }                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: "+ e.Message);
+                return;
+            }
+        }        
+
+        private void buttonAtualizar_Click(object sender, EventArgs e)
+        {
+            AtualizarListaAlertas();
         }
 
-        /*
-       private Boolean ValidateAlertInfo()
-       {
-           bool valido = true;
-           double valor1 = (double) numericUpDownValor1.Value;
-           if (comboBoxOperacao.SelectedItem == "Entre")
-           {
-           double valor2 = (double) numericUpDownValor2.Value;
-           }            
-           return true;
-       }*/
+        private void AtualizarListaAlertas()
+        {
+            listBoxCondicoesAtivas.DataSource = null;
+            listBoxCondicoesDesativas.DataSource = null;
+            listBoxCondicoesAtivas.DataSource = alertasAtivas;
+            listBoxCondicoesDesativas.DataSource = alertasDesativas;
+        }
+       
     }
 }
