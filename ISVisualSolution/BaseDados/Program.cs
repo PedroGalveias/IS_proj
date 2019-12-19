@@ -166,9 +166,10 @@ namespace BaseDados
                         if (time > timeMax)
                         {
                             //ATUALIZAR TIMESTAMP da tabela
-                            #region ATUALIZAR TIMESTAMP da tabela Sensores
-                            SqlCommand sqlCommand = new SqlCommand("UPDATE Sensores set Timestamp = @time WHERE id=@id", connection);
+                            #region ATUALIZAR TIMESTAMP e Battery da tabela Sensores
+                            SqlCommand sqlCommand = new SqlCommand("UPDATE Sensores set Timestamp = @time, Battery=@battery WHERE id=@id", connection);
                             sqlCommand.Parameters.AddWithValue("@time", time);
+                            sqlCommand.Parameters.AddWithValue("@battery", battery);
                             sqlCommand.Parameters.AddWithValue("@id", id);
                             #endregion
                             int result = sqlCommand.ExecuteNonQuery();
