@@ -177,7 +177,7 @@ namespace AlertsForm
            string msg = Encoding.UTF8.GetString(e.Message);
 
             this.Invoke((MethodInvoker)delegate () {
-                MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
+                //MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
                 //codigo tiene que ser hecho aqui ?
                 Sensor sensor = new Sensor(msg);
                 compararDados(sensor);
@@ -271,10 +271,11 @@ namespace AlertsForm
                             {
                                 dadosOcorrencia.Valor2 = alerta.Valor2;
                             }
-                            MessageBox.Show("ALERTA:" + dadosOcorrencia.ToString());
+                          
                             string json = JsonConvert.SerializeObject(dadosOcorrencia);
-                            MessageBox.Show(json);
+                          //  MessageBox.Show(json);
                             client.Publish(TOPIC, Encoding.UTF8.GetBytes(json));
+                            MessageBox.Show("ALERTA ENVIADO: " + dadosOcorrencia.ToString());  
                         }
                     }
                     
