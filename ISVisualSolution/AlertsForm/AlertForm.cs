@@ -89,26 +89,34 @@ namespace AlertsForm
             #endregion
 
             #region Compare Alerts with msg
-            client = new MqttClient(BROKENDOMAIN);
-
-            client.Connect(Guid.NewGuid().ToString());
-            if (!client.IsConnected)
+            try
             {
-                MessageBox.Show("Error connecting to message broker ...");
-                return;
+                client = new MqttClient(BROKENDOMAIN);
+
+                client.Connect(Guid.NewGuid().ToString());
+                if (!client.IsConnected)
+                {
+                    MessageBox.Show("Error connecting to message broker ...");
+                    return;
+                }
+                else
+                {
+                    //  MessageBox.Show("Connection to broke ok.");
+
+                }
+
+
+                byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+
+                client.Subscribe(topicsSubscriber, qosLevels);
+
+                client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.Show("Connection to broke ok...");
-                
+                MessageBox.Show(e.Message);
             }
-
-
-            byte[] qosLevels = {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE};
-
-            client.Subscribe(topicsSubscriber, qosLevels);
-
-            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+            
             #endregion
         }
         private void GetListOfAlertasAtivas()
@@ -171,7 +179,8 @@ namespace AlertsForm
             this.Invoke((MethodInvoker)delegate () {
                 MessageBox.Show($"Received : {msg} on topic {e.Topic}\n");
                 //codigo tiene que ser hecho aqui ?
-                Sensor sensor = new Sensor(msg);                
+                Sensor sensor = new Sensor(msg);
+                compararDados(sensor);
             });
            
             //***
@@ -183,6 +192,95 @@ namespace AlertsForm
         }
         private void compararDados(Sensor sensor)
         {
+            for (int i = 0; i < sensor.Tipo.Length; i++)
+            {              
+                string tipo;
+                switch (sensor.Tipo.GetValue(i).ToString())
+                {
+                    case "hum":
+                        tipo = "HUMIDADE";
+                        break;
+                    case "temp":
+                        tipo = "TEMPERATURA";
+                        break;
+                    case "lum":
+                        tipo = "LUMINOSIDADE";
+                        break;
+                    default:
+                        tipo = "UNDEFINE";
+                        MessageBox.Show("Error: Ainda não existe aquel tipo de sensor");
+                        break;
+                }
+                foreach (Alerta alerta in alertasAtivas)
+                {
+                    bool alertaExplodiu = false;
+
+                    if (tipo == alerta.Tipo)
+                    {
+                        #region Compare Value 
+                        switch (alerta.Operacao)
+                        {
+                            /*{"id": 1, "temp": 22.489999771118164, "hum": 47.290000915527344, "batt": 100, "time": 1575058625, "sensors": ["temp", "hum"]}*/
+                            case "MAIOR":
+                                if (sensor.Valor[i] > alerta.Valor1)
+                                {
+                                    alertaExplodiu = true;
+                                }
+                                break;
+                            case "MENOR":
+                                if (sensor.Valor[i] < alerta.Valor1)
+                                {
+                                    alertaExplodiu = true;
+                                }
+                                break;
+                            case "IGUAL":
+                                if (sensor.Valor[i] == alerta.Valor1)
+                                {
+                                    alertaExplodiu = true;
+                                }
+                                break;
+                            case "ENTRE":
+                                if (alerta.Valor1 > alerta.Valor2)
+                                {
+                                    double aux = alerta.Valor1;
+                                    alerta.Valor1 = alerta.Valor2;
+                                    alerta.Valor2 = aux;
+                                }
+                                if (sensor.Valor[i] > alerta.Valor1 && sensor.Valor[i] < alerta.Valor2)
+                                {
+                                    alertaExplodiu = true;
+                                }
+                                break;
+                            default:
+                                MessageBox.Show("ERROR:operação invalida");
+                                break;                                
+                        }
+                        #endregion
+                        if (alertaExplodiu)
+                        {
+                            DadosOcorrencia dadosOcorrencia = new DadosOcorrencia
+                            {
+                                IdSensor = sensor.Id,
+                                Tipo = sensor.Tipo.GetValue(i).ToString(),
+                                ValorSensor = sensor.Valor.ElementAt(i),
+                                IdAlerta = alerta.Id,
+                                Operacao = alerta.Operacao,
+                                Valor1 = alerta.Valor1,
+                            };
+                            if (alerta.Operacao == "ENTRE")
+                            {
+                                dadosOcorrencia.Valor2 = alerta.Valor2;
+                            }
+                            MessageBox.Show("ALERTA:" + dadosOcorrencia.ToString());
+                            string json = JsonConvert.SerializeObject(dadosOcorrencia);
+                            MessageBox.Show(json);
+                            client.Publish(TOPIC, Encoding.UTF8.GetBytes(json));
+                        }
+                    }
+                    
+                }               
+            }
+            
 
         }
 
@@ -234,12 +332,7 @@ namespace AlertsForm
             }
             contador++;
 
-            #region adicionar alert num ficheiro XML
-            /*string json = JsonConvert.SerializeObject(novaAlerta);
-
-            StreamWriter streamWriter = File.AppendText(FILE_ALERT);
-            streamWriter.WriteLine(json);
-            streamWriter.Close();*/
+            #region adicionar alert num ficheiro XML      
 
             XmlDocument doc = new XmlDocument();
             if (!File.Exists(FILE_ALERT))
@@ -299,55 +392,6 @@ namespace AlertsForm
             numericUpDownValor2.Visible = false;
         }
 
-        private void atualizarAlertas()
-        {
-            List<Alerta> listaAlertasAtivas = new List<Alerta>();
-            List<Alerta> listaAlertasDesativas = new List<Alerta>();
-            SqlConnection conn = null;
-            try
-            {
-                conn = new SqlConnection(connectionString);
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts", conn);
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Alerta alerta = new Alerta
-                    {
-                        Id = (int)reader["Id"],
-                        Tipo = (string)reader["Tipo"],
-                        Operacao = (string)reader["Operacao"],
-                        Valor1 = (reader["Valor1"] == DBNull.Value) ? 0 : Convert.ToDouble(reader["Valor1"]),
-                        Valor2 = (reader["Valor2"] == DBNull.Value) ? 0 : Convert.ToDouble(reader["Valor2"]),
-                        Ativo = (bool)reader["Ativo"]
-                    };
-                    if (alerta.Ativo)
-                    {
-                    listaAlertasAtivas.Add(alerta);
-                    }
-                    else
-                    {
-                        listaAlertasDesativas.Add(alerta);
-                    }
-
-                    listBoxCondicoesAtivas.DataSource = listaAlertasAtivas;
-                    listBoxCondicoesDesativas.DataSource = listaAlertasDesativas;
-                }
-                reader.Close();
-                conn.Close();
-                return;
-            }
-            catch (Exception)
-            {
-                if (conn.State == System.Data.ConnectionState.Open)
-                {
-                    conn.Close();
-                }
-
-                return;
-            }
-        }
         #region ATIVAR e DESATIVAR ALERTAS
         private void buttonDesativar_Click(object sender, EventArgs e)
         {
@@ -434,6 +478,14 @@ namespace AlertsForm
             listBoxCondicoesAtivas.DataSource = alertasAtivas;
             listBoxCondicoesDesativas.DataSource = alertasDesativas;
         }
-       
+
+        private void AlertForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (client.IsConnected)
+            {
+
+                client.Disconnect();
+            }
+        }
     }
 }

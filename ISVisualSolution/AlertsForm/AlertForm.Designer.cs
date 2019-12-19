@@ -275,6 +275,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "AlertForm";
             this.Text = "AlertForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AlertForm_FormClosing);
             this.groupBoxAtivas.ResumeLayout(false);
             this.groupBoxDesativas.ResumeLayout(false);
             this.groupBoxNews.ResumeLayout(false);
