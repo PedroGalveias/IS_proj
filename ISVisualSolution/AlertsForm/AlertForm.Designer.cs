@@ -180,6 +180,11 @@
             0,
             131072});
             this.numericUpDownValor1.Location = new System.Drawing.Point(132, 82);
+            this.numericUpDownValor1.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.numericUpDownValor1.Name = "numericUpDownValor1";
             this.numericUpDownValor1.Size = new System.Drawing.Size(169, 22);
             this.numericUpDownValor1.TabIndex = 10;
