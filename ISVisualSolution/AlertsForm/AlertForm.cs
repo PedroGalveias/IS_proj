@@ -275,7 +275,7 @@ namespace AlertsForm
                             string json = JsonConvert.SerializeObject(dadosOcorrencia);
                           //  MessageBox.Show(json);
                             client.Publish(TOPIC, Encoding.UTF8.GetBytes(json));
-                            MessageBox.Show("ALERTA ENVIADO: " + dadosOcorrencia.ToString());  
+                            //MessageBox.Show("ALERTA ENVIADO: " + dadosOcorrencia.ToString());  
                         }
                     }
                     
