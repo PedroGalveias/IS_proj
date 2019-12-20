@@ -212,16 +212,19 @@ namespace BaseDados
                         string operacao = (string)response["Operacao"];
                         double valor1 = (double)response["Valor1"];
                         double valor2 = (double)response["Valor2"];
-                        bool ativo = (bool)response["Ativo"];
+                        float valorSensor = (float)response["ValorSensor"];
                         short sensor_id=(short)response["Sensor_Id"];
+                        int IdAlerta = (int)response["IdAlerta"];
 
-                        SqlCommand sqlCommand = new SqlCommand("INSERT INTO Alerts (Tipo,Operacao,Valor1,Valor2,Ativo,Sensor_Id) VALUES(@Tipo,@Operacao,@Valor1,@Valor2,@Ativo,@sensor_id)", connection);
+                        SqlCommand sqlCommand = new SqlCommand("INSERT INTO Alerts (Tipo,Operacao,Valor1,Valor2,ValorSensor,Sensor_Id,IdAlerta) VALUES(@Tipo,@Operacao,@Valor1,@Valor2,@ValorSensor,@sensor_id,@IdAlerta)", connection);
                         sqlCommand.Parameters.AddWithValue("@Tipo",tipo);
                         sqlCommand.Parameters.AddWithValue("@Operacao", operacao);
                         sqlCommand.Parameters.AddWithValue("@Valor1", valor1);
                         sqlCommand.Parameters.AddWithValue("@Valor2", valor2);
-                        sqlCommand.Parameters.AddWithValue("@Ativo", ativo);
+                        sqlCommand.Parameters.AddWithValue("@ValorSensor", valorSensor);
                         sqlCommand.Parameters.AddWithValue("@sensor_id", sensor_id);
+                        sqlCommand.Parameters.AddWithValue("@IdAlerta", IdAlerta);
+
 
                         sqlCommand.ExecuteNonQuery();
                         connection.Close();
