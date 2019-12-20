@@ -21,7 +21,7 @@ namespace API
 		bool InvalidateSensorReading(short sensorId, long timestamp);
               
         [OperationContract]
-		bool UpdateSensor(short id);
+		bool UpdateSensor(short id, long timestamp);
 
 		[OperationContract]
 		List<Reading> GetLast150Readings(short sensorId);
