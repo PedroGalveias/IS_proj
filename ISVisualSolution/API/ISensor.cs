@@ -21,16 +21,37 @@ namespace API
 		bool InvalidateSensorReading(short sensorId, long timestamp);
               
         [OperationContract]
-		bool UpdateSensor(short id, long timestamp);
+		bool UpdateSensor(short id, long timestamp, short battery, string location);
 
 		[OperationContract]
-		List<Reading> GetLast150Readings(short sensorId);
+		List<Reading> GetLast164Readings(short sensorId);
 
 		[OperationContract]
 		Reading GetLatestReading(short sensorId);
 
 		[OperationContract]
 		Reading GetReading(short sensorId, long timestamp);
+
+		[OperationContract]
+		bool CreatePersonalSensor(short battery, long timestamp, string location);
+
+		[OperationContract]
+		bool DeletePersonalSensor(short id);
+
+		[OperationContract]
+		List<Sensor> GetPersonalSensors();
+
+		[OperationContract]
+		bool AddReading(Reading reading);
+
+		[OperationContract]
+		List<Reading> GetReadingsBetween(short sensorId, long timestamp1, long timestamp2);
+
+		[OperationContract]
+		bool AddTempFromMobile(float temp, long timestamp, short battery, string location);
+
+		[OperationContract]
+		List<Sensor> GetSensorsByLocation(string location);
 	}
 
 	[DataContract]
@@ -47,12 +68,23 @@ namespace API
 
 		[DataMember]
 		public long Timestamp { get; set; }
+
+		[DataMember]
+		public string Location { get; set; }
+
+		[DataMember]
+		public SensorType Personal { get; set; }
 	}
 
 	public enum ValueType
     {
         INVALID, VALID
     }
+
+	public enum SensorType
+	{
+		PERSONAL, NON_PERSONAL
+	}
 
 	public class Reading
 	{

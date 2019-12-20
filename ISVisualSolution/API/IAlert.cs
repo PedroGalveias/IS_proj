@@ -18,7 +18,6 @@ namespace API
         Alert GetAlertsById(int id);
     }
 
-
     [DataContract]
     public class Alert
     {

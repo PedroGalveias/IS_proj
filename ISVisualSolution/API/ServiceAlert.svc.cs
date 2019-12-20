@@ -16,90 +16,79 @@ namespace API
 
         public Alert GetAlertsById(int id)
         {
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            sqlConnection.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
-            cmd.Parameters.AddWithValue("@id", id);
-            SqlDataReader reader = cmd.ExecuteReader();
             Alert alert = null;
 
-            while (reader.Read())
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
+                sqlConnection.Open();
 
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts WHERE UPPER(Id) = UPPER(@id)", sqlConnection);
+                cmd.Parameters.AddWithValue("@id", id);
 
-               
-                string tipo = reader.GetString(1);
-                string operacao = reader.GetString(2);
-                float valor1 = reader.GetFloat(3);
-                float valor2 = reader.GetFloat(4);
-                int sensorId = reader.GetInt32(5);
-
-
-                alert = new Alert
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    Id = id,
-                    Tipo = tipo,
-                    Operacao = operacao,
-                    Valor1 = valor1,
-                    Valor2 = valor2,
-                    SensorId = sensorId
+                    reader.Read();
 
-                };
+                    string tipo = reader.GetString(1);
+                    string operacao = reader.GetString(2);
+                    float valor1 = reader.GetFloat(3);
+                    float valor2 = reader.GetFloat(4);
+                    int sensorId = reader.GetInt32(5);
 
+                    alert = new Alert
+                    {
+                        Id = id,
+                        Tipo = tipo,
+                        Operacao = operacao,
+                        Valor1 = valor1,
+                        Valor2 = valor2,
+                        SensorId = sensorId
 
+                    };
+                }
             }
 
-            reader.Close();
-            sqlConnection.Close();
-
             return alert;
-
         }
 
         public List<Alert> GetAllAlerts()
         {
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            // Sensor sensor = new Sensor();
             List<Alert> alerts = new List<Alert>();
 
-            sqlConnection.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts", sqlConnection);
-            SqlDataReader reader = cmd.ExecuteReader();
-
-
-            while (reader.Read())
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                int id = reader.GetInt32(0);
-                string tipo = reader.GetString(1);
-                string operacao = reader.GetString(2);
-                float valor1 = reader.GetFloat(3);
-                float valor2 = reader.GetFloat(4);
-                int sensorId = reader.GetInt32(5);
-                
+                sqlConnection.Open();
 
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Alerts", sqlConnection);
 
-                Alert alert = new Alert
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    Id = id,
-                    Tipo = tipo,
-                    Operacao = operacao,
-                    Valor1 = valor1,
-                    Valor2 = valor2,
-                    SensorId = sensorId
+                    while (reader.Read())
+                    {
+                        int id = reader.GetInt32(0);
+                        string tipo = reader.GetString(1);
+                        string operacao = reader.GetString(2);
+                        float valor1 = reader.GetFloat(3);
+                        float valor2 = reader.GetFloat(4);
+                        int sensorId = reader.GetInt32(5);
 
-                };
+                        Alert alert = new Alert
+                        {
+                            Id = id,
+                            Tipo = tipo,
+                            Operacao = operacao,
+                            Valor1 = valor1,
+                            Valor2 = valor2,
+                            SensorId = sensorId
 
-                alerts.Add(alert);
+                        };
+
+                        alerts.Add(alert);
+                    }
+                }
             }
-
-            reader.Close();
-            sqlConnection.Close();
 
             return alerts;
         }
-
-
-
-     
     }
 }
