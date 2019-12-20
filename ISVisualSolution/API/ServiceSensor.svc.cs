@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using static API.Sensor;
 
 namespace API
 {
@@ -18,10 +19,11 @@ namespace API
 
         /**
          * *** TODO ***
-         * GET SENSOR BY LOCATION
-         * UPDATE SENSOR
-         * PERSONAL SENSORS
-         * *** MADE WITH ❤ BY PETER ***
+         * GET SENSOR BY LOCATION ✔ 
+         * UPDATE SENSOR ✔ 
+         * PERSONAL SENSORS ✔ 
+         * GET SENSOR WITHOUT DATE INTERVAL 
+         * *** MADE WITH ❤ BY PETER  (and thainão) ***
          * *** UwU ***
          */
 
@@ -126,6 +128,7 @@ namespace API
             while (reader.Read())
             {
                 sensorTypes.Add(reader.GetString(0));
+               
             }
 
             reader.Close();
@@ -153,6 +156,7 @@ namespace API
                     SensorTypes = sensorTypes
                 };
                 sensors.Add(sensor);
+                
             }
            
             reader.Close();
@@ -261,6 +265,7 @@ namespace API
 
             cmd = new SqlCommand("SELECT * FROM dbo.Sensores WHERE Id = @id", sqlConnection);
             cmd.Parameters.AddWithValue("@id", id);
+            
 
             reader = cmd.ExecuteReader();
 
@@ -309,9 +314,7 @@ namespace API
 
         public bool UpdateSensor(short id, long timestamp, short battery, string location)
         {
-            //long time = (long)response["time"];
-            
-           //primeir: pegar o timestamp que se pretende atu
+           
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
@@ -331,6 +334,107 @@ namespace API
             }
 
         }
+
+        public void AddNewSensor(short id, string sensorType, short battery, long timestamp, string location)
+        {
+            List<Sensor> sensors = new List<Sensor>();
+            List<String> sensorTypes = new List<string>();
+            sensors = GetAllSensors();
+            Sensor sensor;
+            SqlCommand cmd;
+
+
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                sqlConnection.Open();
+                cmd = new SqlCommand("SELECT MAX(Id) FROM dbo.Sensores", sqlConnection);
+                cmd.Parameters.AddWithValue("Id", id);
+           
+                cmd = new SqlCommand("SELECT type FROM dbo.Sensor_Type", sqlConnection);
+                SqlDataReader reader = cmd.ExecuteReader();
+               
+                while (reader.Read())
+                {
+                   sensorTypes.Add(reader.GetString(0)); //adiciona todos os tipos
+                   
+                }
+                reader.Close();
+                if (sensorTypes.Contains(sensorType) == false)
+                {
+                   sensorTypes.Add(sensorType);
+                }
+                if (location == "Null")
+                {
+                    location = "";
+                }
+
+                sensor = new Sensor
+                {
+                    Id =id+1,
+                    Battery = battery,
+                    Timestamp = timestamp,
+                    SensorTypes = sensorTypes,
+                    Location = location
+                   
+
+                };
+
+                
+            }
+
+        }
+
+     
+        public List<Sensor> GetSensorsByLocationWithDateInterval(string location, long timeInicial, long timeFinal)
+        {
+            List<Sensor> sensorsLocal = new List<Sensor>();
+            List<Sensor> sensors = new List<Sensor>();
+            List<Reading> readings = new List<Reading>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                sqlConnection.Open();
+
+                sensorsLocal = GetSensorsByLocation(location);
+
+
+                foreach (Sensor sensor in sensorsLocal)
+                {
+                    if (sensorsLocal.Count == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {   //Faz leitura em determinado local e intervalo de tempo
+                        readings.Add(GetReadingBetween(sensor.Id, timeFinal, timeInicial)); 
+                    }
+                    
+                   
+                }
+                foreach (Reading reading in readings) 
+                {
+                    if (readings.Count == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        sensors.Add(GetSensorById(reading.SensorId));
+
+                    }
+                  
+                     
+
+                }
+
+
+            }
+
+            return sensors;
+        }
+
+
 
 
     }
