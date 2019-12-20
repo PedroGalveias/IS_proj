@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
 
 namespace API
 {
@@ -17,10 +13,10 @@ namespace API
 		[OperationContract]
 		Sensor GetSensorById(short id);
 
-        [OperationContract]
+		[OperationContract]
 		bool InvalidateSensorReading(short sensorId, long timestamp);
-              
-        [OperationContract]
+
+		[OperationContract]
 		bool UpdateSensor(short id, long timestamp, short battery, string location);
 
 		[OperationContract]
@@ -77,9 +73,9 @@ namespace API
 	}
 
 	public enum ValueType
-    {
-        INVALID, VALID
-    }
+	{
+		INVALID, VALID
+	}
 
 	public enum SensorType
 	{
