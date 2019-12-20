@@ -307,9 +307,31 @@ namespace API
             return true;
         }
 
-        public bool UpdateSensor(short id)
+        public bool UpdateSensor(short id, long timestamp, short battery, string location)
         {
-            throw new NotImplementedException();
+            //long time = (long)response["time"];
+            
+           //primeir: pegar o timestamp que se pretende atu
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                sqlConnection.Open();
+                
+                Sensor sensor = GetSensorById(id);
+                
+                string select = $"UPDATE dbo.Sensores SET Timestamp = {timestamp}, Battery ={battery}, Location ={location} WHERE {sensor.Id}";
+
+                    SqlCommand cmd = new SqlCommand(select, sqlConnection);
+                    int result = cmd.ExecuteNonQuery();
+                    if (result <= 0)
+                    {
+                        return false;
+                    }
+                return true;
+
+            }
+
         }
+
+
     }
 }
