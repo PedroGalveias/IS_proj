@@ -53,7 +53,7 @@ def execute_brige(filename):
 		f.close();
 
 def main():
-	execute_brige("data_1.bin")
+	execute_brige("data_full.bin")
 
 if __name__ == "__main__":
 	main()
