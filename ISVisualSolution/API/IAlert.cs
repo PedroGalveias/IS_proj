@@ -12,7 +12,7 @@ namespace API
 	public interface IAlert
 	{
 		[OperationContract]
-		List<Alert> GetAllAlerts();
+		List<Alert> GetLast164Alerts();
 
 		[OperationContract]
 		Alert GetAlertsById(int id);

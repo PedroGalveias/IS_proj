@@ -786,9 +786,9 @@ namespace API
 
 					string tipo = reader.GetString(1);
 					string operacao = reader.GetString(2);
-					float valor1 = reader.GetFloat(3);
-					float valor2 = reader.GetFloat(4);
-					int sensorId = reader.GetInt32(5);
+					float valor1 = (float) reader.GetSqlDouble(3);
+					float valor2 = (float) reader.GetSqlDouble(4);
+					short sensorId = reader.GetInt16(6);
 
 					alert = new Alert
 					{
@@ -806,7 +806,7 @@ namespace API
 			return alert;
 		}
 
-		public List<Alert> GetAllAlerts()
+		public List<Alert> GetLast164Alerts()
 		{
 			List<Alert> alerts = new List<Alert>();
 
@@ -818,14 +818,18 @@ namespace API
 
 				using (SqlDataReader reader = cmd.ExecuteReader())
 				{
+					int read_counter = 0;
+
 					while (reader.Read())
 					{
+						read_counter++;
+
 						short id = reader.GetInt16(0);
 						string tipo = reader.GetString(1);
 						string operacao = reader.GetString(2);
-						float valor1 = reader.GetFloat(3);
-						float valor2 = reader.GetFloat(4);
-						int sensorId = reader.GetInt32(5);
+						float valor1 = (float) reader.GetSqlDouble(3);
+						float valor2 = (float) reader.GetSqlDouble(4);
+						short sensorId = reader.GetInt16(6);
 
 						Alert alert = new Alert
 						{
@@ -839,6 +843,11 @@ namespace API
 						};
 
 						alerts.Add(alert);
+
+						if (read_counter >= 164)
+						{
+							break;
+						}
 					}
 				}
 			}
