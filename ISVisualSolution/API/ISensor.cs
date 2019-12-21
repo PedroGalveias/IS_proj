@@ -9,70 +9,100 @@ using static API.Sensor;
 
 namespace API
 {
-    [ServiceContract]
-    public interface ISensor
-    {
-        [OperationContract]
-        List<Sensor> GetAllSensors();
+	[ServiceContract]
+	public interface ISensor
+	{
+		[OperationContract]
+		List<Sensor> GetAllSensors();
 
-        [OperationContract]
-        Sensor GetSensorById(short id);
+		[OperationContract]
+		Sensor GetSensorById(short id);
 
-        [OperationContract]
-        bool InvalidateSensorReading(short sensorId, long timestamp);
+		[OperationContract]
+		bool InvalidateSensorReading(short sensorId, long timestamp);
 
-        [OperationContract]
-        bool UpdateSensor(short id, long timestamp, short battery, string location);
-        [OperationContract]
-        void AddNewSensor(short id, string sensorType, short battery, long timestamp, string location);
+		[OperationContract]
+		bool UpdateSensor(short id, long timestamp, short battery, string location);
 
+		[OperationContract]
+		bool AddNewPersonalSensor(short battery, long timestamp, string location);
 
-        [OperationContract]
-        List<Reading> GetLast150Readings(short sensorId);
+		[OperationContract]
+		bool DeletePersonalSensor(short id);
 
-        [OperationContract]
-        Reading GetLatestReading(short sensorId);
+		[OperationContract]
+		List<Sensor> GetPersonalSensors();
 
-        [OperationContract]
-        Reading GetReading(short sensorId, long timestamp);
+		[OperationContract]
+		List<Reading> GetLast164Readings(short sensorId);
 
-        [OperationContract]
-        List<Sensor> GetSensorsByLocationWithDateInterval(string location, long timeInicial, long timeFinal)
-    }
+		[OperationContract]
+		Reading GetLatestReading(short sensorId);
 
-    [DataContract]
-    public class Sensor
-    {
-        [DataMember]
-        public List<string> SensorTypes { get; set; }
+		[OperationContract]
+		Reading GetReading(short sensorId, long timestamp);
 
-        [DataMember]
-        public short Id { get; set; }
+		[OperationContract]
+		List<Sensor> GetSensorsByLocation(string location);
 
-        [DataMember]
-        public short Battery { get; set; }
+		[OperationContract]
+		bool AddReading(Reading reading);
 
-        [DataMember]
-        public long Timestamp { get; set; }
-    }
-        public enum ValueType
-        {
-            INVALID, VALID
-        }
+		[OperationContract]
+		List<Reading> GetReadingsBetween(short sensorId, long timestamp1, long timestamp2);
 
-        public class Reading
-        {
-            [DataMember]
-            public short SensorId { get; set; }
+		[OperationContract]
+		bool AddTempFromMobile(float temp, long timestamp, short battery, string location);
 
-            [DataMember]
-            public Dictionary<string, string> Readings { get; set; }
+		[OperationContract]
+		List<Reading> GetReadingsByLocationWithDateInterval(string location, long timeInicial, long timeFinal);
+	}
 
-            [DataMember]
-            public long Timestamp { get; set; }
+	[DataContract]
+	public class Sensor
+	{
+		[DataMember]
+		public List<string> SensorTypes { get; set; }
 
-            [DataMember]
-            public ValueType Status { get; set; }
-        }
-    }
+		[DataMember]
+		public short Id { get; set; }
+
+		[DataMember]
+		public short Battery { get; set; }
+
+		[DataMember]
+		public long Timestamp { get; set; }
+
+		[DataMember]
+		public string Location { get; set; }
+
+		[DataMember]
+		public SensorType Personal { get; set; }
+	}
+	public enum ValueType
+	{
+		INVALID, VALID
+	}
+
+	public enum SensorType
+	{
+		PERSONAL, NON_PERSONAL
+	}
+
+	[DataContract]
+	public class Reading
+	{
+		[DataMember]
+		public short SensorId { get; set; }
+
+		[DataMember]
+		public Dictionary<string, string> Readings { get; set; }
+
+		[DataMember]
+		public long Timestamp { get; set; }
+
+		[DataMember]
+		public ValueType Status { get; set; }
+	}	
+}
 
